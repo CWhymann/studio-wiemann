@@ -1,0 +1,25 @@
+<div style="display: flex; gap: 16px">
+  <div style="flex: 1; border: 1px solid #ccc; padding: 12px">
+    <h3>Status-Verteilung</h3>
+    @for (s of statuses; track s.key) {
+      <p>{{ s.label }}: {{ count(s.key) }} ({{ pct(s.key) }}%)</p>
+    }
+    <p>
+      <strong>{{ store.tasks().length }}</strong> Aufgaben insgesamt
+    </p>
+  </div>
+
+  <div style="flex: 1; border: 1px solid #ccc; padding: 12px">
+    <h3>Auslastung pro Person</h3>
+    @for (p of perPerson(); track p.name) {
+      <p>{{ p.name }}: {{ p.total }} Aufgaben</p>
+    }
+  </div>
+
+  <div style="flex: 1; border: 1px solid #ccc; padding: 12px">
+    <h3>Woche im Blick</h3>
+    @for (d of days; track d) {
+      <p>{{ d }}: {{ openCountForDay(d) }} offen</p>
+    }
+  </div>
+</div>

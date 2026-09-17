@@ -1,0 +1,27 @@
+<div>
+  <div style="display: flex; justify-content: space-between; margin-bottom: 16px">
+    <span>{{ formatDayMonth(weekDates[0]) }} – {{ formatDayMonth(weekDates[4]) }}</span>
+    <span>KW {{ weekNumber }}</span>
+  </div>
+
+  <div style="display: flex; gap: 16px">
+    @for (day of days; track day; let i = $index) {
+      <div
+        style="flex: 1; border: 1px solid #ccc; padding: 8px"
+        [style.border-color]="isToday(weekDates[i]) ? 'orange' : '#ccc'"
+      >
+        <strong>{{ day }} {{ weekDates[i].getDate() }}.{{ weekDates[i].getMonth() + 1 }}.</strong>
+        @if (isToday(weekDates[i])) {
+          <span> (Heute)</span>
+        }
+
+        @for (task of tasksForDay(day); track task.id) {
+          <div style="border-left: 3px solid; margin: 8px 0; padding-left: 8px;" [style.border-left-color]="statusMeta(task.status).dot">
+            <p>{{ task.title }}</p>
+            <small>{{ task.owner }} · {{ statusMeta(task.status).label }}</small>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

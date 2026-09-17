@@ -1,0 +1,45 @@
+<div>
+  <div style="display: flex; gap: 8px; margin-bottom: 16px">
+    @for (p of store.people(); track p.id) {
+      <span>{{ p.name }}</span>
+    }
+    <button (click)="toggleForm()">+ Aufgabe</button>
+  </div>
+
+  @if (showForm()) {
+    <form (ngSubmit)="submitTask()" style="margin-bottom: 16px; display: flex; gap: 8px">
+      <input [(ngModel)]="newTitle" name="title" placeholder="Was ist zu tun?" />
+      <select [(ngModel)]="newOwner" name="owner">
+        @for (p of store.people(); track p.id) {
+          <option [value]="p.name">{{ p.name }}</option>
+        }
+      </select>
+      <select [(ngModel)]="newDue" name="due">
+        @for (d of days; track d) {
+          <option [value]="d">{{ d }}</option>
+        }
+      </select>
+      <button type="submit">Hinzufügen</button>
+    </form>
+  }
+
+  <div style="display: flex; gap: 16px">
+    @for (s of statuses; track s.key) {
+      <div style="flex: 1; border: 1px solid #ccc; padding: 8px">
+        <h3>{{ s.label }} ({{ columnTasks(s.key).length }})</h3>
+        @for (task of columnTasks(s.key); track task.id) {
+          <div style="border: 1px solid #ddd; padding: 8px; margin-bottom: 8px">
+            <p>{{ task.title }}</p>
+            <small>{{ task.owner }} · {{ task.due }}</small>
+            <select [ngModel]="task.status" (ngModelChange)="store.updateStatus(task.id, $event)">
+              @for (s2 of statuses; track s2.key) {
+                <option [value]="s2.key">{{ s2.label }}</option>
+              }
+            </select>
+            <button (click)="store.removeTask(task.id)">✕</button>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>
