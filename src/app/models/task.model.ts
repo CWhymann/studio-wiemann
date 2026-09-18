@@ -7,9 +7,9 @@ export interface StatusMeta {
 }
 
 export const STATUSES: StatusMeta[] = [
-  { key: 'offen', label: 'Offen', dot: '#B45309' },
-  { key: 'laeuft', label: 'Läuft', dot: '#0F766E' },
-  { key: 'fertig', label: 'Fertig', dot: '#4D7C0F' },
+  { key: 'offen', label: 'Offen', dot: '#D97706' },
+  { key: 'laeuft', label: 'Läuft', dot: '#2563EB' },
+  { key: 'fertig', label: 'Fertig', dot: '#16A34A' },
 ];
 
 export const DAYS = ['Mo', 'Di', 'Mi', 'Do', 'Fr'] as const;
@@ -21,6 +21,7 @@ export interface Task {
   owner: string;
   status: TaskStatus;
   due: Weekday;
+  due_date: string | null;
   project_key: string;
 }
 
@@ -31,6 +32,7 @@ export interface Person {
   role: string;
   email: string;
   phone: string;
+  color: string;
 }
 
 export interface Project {

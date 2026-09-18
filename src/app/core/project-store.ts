@@ -1,6 +1,6 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { SupabaseService } from './supabase';
-import { Task, Person, Project, TaskStatus, Weekday } from '../models/task.model';
+import { Task, Person, Project, TaskStatus, Weekday, STATUSES } from '../models/task.model';
 
 @Injectable({
   providedIn: 'root',
@@ -22,7 +22,15 @@ export class ProjectStore {
     this._people().filter((p) => p.project_key === this._activeKey()),
   );
 
+  readonly allPeople = computed(() => this._people());
+
   readonly tasks = computed(() => this._tasks().filter((t) => t.project_key === this._activeKey()));
+
+  readonly avatarColors = computed(() => {
+    const map: Record<string, string> = {};
+    this._people().forEach((p) => (map[p.name] = p.color || '#9CA3AF'));
+    return map;
+  });
 
   constructor(private supabase: SupabaseService) {
     this.loadAll();
@@ -47,10 +55,24 @@ export class ProjectStore {
     this._activeKey.set(key);
   }
 
-  async addTask(title: string, owner: string, due: Weekday) {
+  private weekdayFromDate(dateStr: string): Weekday {
+    const days: Weekday[] = ['Mo', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Fr'];
+    const idx = new Date(dateStr).getDay();
+    return days[idx];
+  }
+
+  async addTask(title: string, owner: string, dueDate: string) {
+    const weekday = this.weekdayFromDate(dueDate);
     const { data } = await this.supabase.client
       .from('tasks')
-      .insert({ title, owner, due, status: 'offen', project_key: this._activeKey() })
+      .insert({
+        title,
+        owner,
+        due: weekday,
+        due_date: dueDate,
+        status: 'offen',
+        project_key: this._activeKey(),
+      })
       .select();
     if (data) this._tasks.update((prev) => [...prev, ...(data as Task[])]);
   }
@@ -85,5 +107,25 @@ export class ProjectStore {
   async updatePerson(id: number, changes: Partial<Person>) {
     await this.supabase.client.from('people').update(changes).eq('id', id);
     this._people.update((prev) => prev.map((p) => (p.id === id ? { ...p, ...changes } : p)));
+  }
+
+  generateRandomColor(): string {
+    const hue = Math.floor(Math.random() * 360);
+    const saturation = 55 + Math.random() * 25;
+    const lightness = 35 + Math.random() * 15;
+    return this.hslToHex(hue, saturation, lightness);
+  }
+
+  private hslToHex(h: number, s: number, l: number): string {
+    s /= 100;
+    l /= 100;
+    const k = (n: number) => (n + h / 30) % 12;
+    const a = s * Math.min(l, 1 - l);
+    const f = (n: number) => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+    const toHex = (x: number) =>
+      Math.round(255 * x)
+        .toString(16)
+        .padStart(2, '0');
+    return `#${toHex(f(0))}${toHex(f(8))}${toHex(f(4))}`;
   }
 }

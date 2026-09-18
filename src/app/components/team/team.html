@@ -12,35 +12,96 @@
   @if (showForm()) {
     <form
       (ngSubmit)="submit()"
-      class="mb-6 bg-white border border-gray-200 rounded-2xl p-4 grid grid-cols-1 md:grid-cols-5 gap-3"
+      class="mb-6 bg-white border border-gray-200 rounded-2xl p-4 flex flex-col md:flex-row gap-3 items-stretch md:items-center"
     >
-      <input
-        [(ngModel)]="pName"
-        name="pName"
-        placeholder="Name"
-        class="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/10"
-      />
-      <input
-        [(ngModel)]="pRole"
-        name="pRole"
-        placeholder="Rolle"
-        class="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none"
-      />
+      <div class="relative flex-1">
+        <input
+          [ngModel]="pName()"
+          (ngModelChange)="onNameInput($event)"
+          (focus)="nameSuggestionsOpen.set(pName().trim().length > 0)"
+          name="pName"
+          placeholder="Name"
+          autocomplete="off"
+          class="w-full border border-gray-200 rounded-full px-4 py-2 text-sm bg-gray-50 hover:bg-white focus:outline-none focus:ring-2 focus:ring-gray-900/10 transition-colors"
+        />
+        @if (nameSuggestionsOpen() && nameSuggestions().length > 0) {
+          <div
+            class="absolute left-0 top-11 bg-white border border-gray-200 rounded-xl shadow-lg py-1 z-10 w-full"
+          >
+            @for (p of nameSuggestions(); track p.id) {
+              <button
+                type="button"
+                (click)="pickSuggestion(p)"
+                class="w-full text-left px-3 py-2 text-xs flex items-center gap-2 hover:bg-gray-50"
+              >
+                <span
+                  class="w-5 h-5 rounded-full text-[9px] flex items-center justify-center text-white font-semibold shrink-0"
+                  [style.background]="store.avatarColors()[p.name] || '#9CA3AF'"
+                  >{{ p.name.slice(0, 2).toUpperCase() }}</span
+                >
+                <span
+                  >{{ p.name }} <span class="text-gray-400">· {{ p.role }}</span></span
+                >
+              </button>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="relative">
+        <button
+          type="button"
+          (click)="toggleRoleMenu()"
+          class="border border-gray-200 rounded-full px-4 py-2 text-sm bg-gray-50 hover:bg-white transition-colors flex items-center gap-1.5 min-w-[140px]"
+        >
+          {{ pRole || 'Role' }}
+          <svg
+            class="w-3 h-3 transition-transform ml-auto"
+            [class.rotate-180]="openRoleMenu()"
+            viewBox="0 0 12 12"
+            fill="none"
+          >
+            <path
+              d="M3 4.5L6 7.5L9 4.5"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+        @if (openRoleMenu()) {
+          <div
+            class="absolute left-0 top-11 bg-white border border-gray-200 rounded-xl shadow-lg py-1 z-10 min-w-[160px]"
+          >
+            @for (r of roles; track r) {
+              <button
+                type="button"
+                (click)="selectRole(r)"
+                class="w-full text-left px-3 py-2 text-xs hover:bg-gray-50"
+              >
+                {{ r }}
+              </button>
+            }
+          </div>
+        }
+      </div>
+
       <input
         [(ngModel)]="pEmail"
         name="pEmail"
         placeholder="E-Mail"
-        class="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none"
+        class="flex-1 border border-gray-200 rounded-full px-4 py-2 text-sm bg-gray-50 hover:bg-white focus:outline-none focus:ring-2 focus:ring-gray-900/10 transition-colors"
       />
       <input
         [(ngModel)]="pPhone"
         name="pPhone"
         placeholder="Telefon"
-        class="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none"
+        class="flex-1 border border-gray-200 rounded-full px-4 py-2 text-sm bg-gray-50 hover:bg-white focus:outline-none focus:ring-2 focus:ring-gray-900/10 transition-colors"
       />
       <button
         type="submit"
-        class="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-700 transition-colors"
+        class="bg-gray-900 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-700 transition-colors"
       >
         Speichern
       </button>
@@ -49,37 +110,74 @@
 
   <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
     @for (p of store.people(); track p.id) {
-      <div class="bg-white border border-gray-200 rounded-2xl p-4">
+      <div
+        class="card-accent bg-white rounded-2xl p-4"
+        [style.--card-color]="store.avatarColors()[p.name]"
+      >
         @if (editingId() === p.id) {
           <div class="flex flex-col gap-2">
             <input
               [(ngModel)]="eName"
               name="eName-{{ p.id }}"
-              class="border border-gray-200 rounded px-2 py-1 text-sm"
+              class="border border-gray-200 rounded-full px-3 py-1.5 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-900/10"
               placeholder="Name"
             />
-            <input
-              [(ngModel)]="eRole"
-              name="eRole-{{ p.id }}"
-              class="border border-gray-200 rounded px-2 py-1 text-sm"
-              placeholder="Rolle"
-            />
+
+            <div class="relative">
+              <button
+                type="button"
+                (click)="toggleEditRoleMenu()"
+                class="w-full border border-gray-200 rounded-full px-3 py-1.5 text-sm bg-gray-50 flex items-center gap-1.5"
+              >
+                {{ eRole || 'Role' }}
+                <svg
+                  class="w-3 h-3 transition-transform ml-auto"
+                  [class.rotate-180]="openEditRoleMenu()"
+                  viewBox="0 0 12 12"
+                  fill="none"
+                >
+                  <path
+                    d="M3 4.5L6 7.5L9 4.5"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </button>
+              @if (openEditRoleMenu()) {
+                <div
+                  class="absolute left-0 top-9 bg-white border border-gray-200 rounded-xl shadow-lg py-1 z-10 min-w-[160px] w-full"
+                >
+                  @for (r of roles; track r) {
+                    <button
+                      type="button"
+                      (click)="selectEditRole(r)"
+                      class="w-full text-left px-3 py-2 text-xs hover:bg-gray-50"
+                    >
+                      {{ r }}
+                    </button>
+                  }
+                </div>
+              }
+            </div>
+
             <input
               [(ngModel)]="eEmail"
               name="eEmail-{{ p.id }}"
-              class="border border-gray-200 rounded px-2 py-1 text-sm"
+              class="border border-gray-200 rounded-full px-3 py-1.5 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-900/10"
               placeholder="E-Mail"
             />
             <input
               [(ngModel)]="ePhone"
               name="ePhone-{{ p.id }}"
-              class="border border-gray-200 rounded px-2 py-1 text-sm"
+              class="border border-gray-200 rounded-full px-3 py-1.5 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-900/10"
               placeholder="Telefon"
             />
             <div class="flex gap-2 mt-1">
               <button
                 (click)="saveEdit(p.id)"
-                class="text-xs bg-gray-900 text-white px-3 py-1 rounded"
+                class="text-xs bg-gray-900 text-white px-3 py-1 rounded-full"
               >
                 Speichern
               </button>
@@ -90,9 +188,16 @@
           </div>
         } @else {
           <div class="flex items-start justify-between">
-            <div>
-              <p class="text-sm font-semibold">{{ p.name }}</p>
-              <p class="text-xs text-gray-400 mb-3">{{ p.role }}</p>
+            <div class="flex items-center gap-3">
+              <span
+                class="w-10 h-10 rounded-full text-sm flex items-center justify-center text-white font-semibold shrink-0"
+                [style.background]="store.avatarColors()[p.name]"
+                >{{ p.name.slice(0, 2).toUpperCase() }}</span
+              >
+              <div>
+                <p class="text-sm font-semibold">{{ p.name }}</p>
+                <p class="text-xs text-gray-400">{{ p.role }}</p>
+              </div>
             </div>
             <div class="flex gap-2 text-xs text-gray-300">
               <button (click)="startEdit(p)" class="hover:text-gray-900">✎</button>

@@ -1,2 +1,24 @@
 /* You can add global styles to this file, and also import other style files */
 @import 'tailwindcss';
+
+.card-accent {
+  border: 1px solid var(--card-color);
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--card-color) 25%, transparent);
+  transition: all 0.2s ease;
+}
+
+.card-accent:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--card-color) 45%, transparent);
+}
+
+.card-neutral {
+  border: 1px solid #d1d5db;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
+}
+
+.card-neutral:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
