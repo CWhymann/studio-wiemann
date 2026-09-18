@@ -64,4 +64,26 @@ export class ProjectStore {
     await this.supabase.client.from('tasks').delete().eq('id', id);
     this._tasks.update((prev) => prev.filter((t) => t.id !== id));
   }
+
+  async addProject(key: string, name: string) {
+    const color = '#1D4ED8';
+    const { data } = await this.supabase.client
+      .from('projects')
+      .insert({ key, name, color })
+      .select();
+    if (data) {
+      this._projects.update((prev) => [...prev, ...(data as Project[])]);
+      this._activeKey.set(key);
+    }
+  }
+
+  async removePerson(id: number) {
+    await this.supabase.client.from('people').delete().eq('id', id);
+    this._people.update((prev) => prev.filter((p) => p.id !== id));
+  }
+
+  async updatePerson(id: number, changes: Partial<Person>) {
+    await this.supabase.client.from('people').update(changes).eq('id', id);
+    this._people.update((prev) => prev.map((p) => (p.id === id ? { ...p, ...changes } : p)));
+  }
 }

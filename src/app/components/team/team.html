@@ -50,16 +50,64 @@
   <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
     @for (p of store.people(); track p.id) {
       <div class="bg-white border border-gray-200 rounded-2xl p-4">
-        <p class="text-sm font-semibold">{{ p.name }}</p>
-        <p class="text-xs text-gray-400 mb-3">{{ p.role }}</p>
-        <div class="flex flex-col gap-1 pt-3 border-t border-gray-100 text-xs text-gray-600">
-          @if (p.email) {
-            <a [href]="'mailto:' + p.email" class="hover:text-gray-900">✉ {{ p.email }}</a>
-          }
-          @if (p.phone) {
-            <a [href]="'tel:' + p.phone" class="hover:text-gray-900">☎ {{ p.phone }}</a>
-          }
-        </div>
+        @if (editingId() === p.id) {
+          <div class="flex flex-col gap-2">
+            <input
+              [(ngModel)]="eName"
+              name="eName-{{ p.id }}"
+              class="border border-gray-200 rounded px-2 py-1 text-sm"
+              placeholder="Name"
+            />
+            <input
+              [(ngModel)]="eRole"
+              name="eRole-{{ p.id }}"
+              class="border border-gray-200 rounded px-2 py-1 text-sm"
+              placeholder="Rolle"
+            />
+            <input
+              [(ngModel)]="eEmail"
+              name="eEmail-{{ p.id }}"
+              class="border border-gray-200 rounded px-2 py-1 text-sm"
+              placeholder="E-Mail"
+            />
+            <input
+              [(ngModel)]="ePhone"
+              name="ePhone-{{ p.id }}"
+              class="border border-gray-200 rounded px-2 py-1 text-sm"
+              placeholder="Telefon"
+            />
+            <div class="flex gap-2 mt-1">
+              <button
+                (click)="saveEdit(p.id)"
+                class="text-xs bg-gray-900 text-white px-3 py-1 rounded"
+              >
+                Speichern
+              </button>
+              <button (click)="cancelEdit()" class="text-xs text-gray-400 px-3 py-1">
+                Abbrechen
+              </button>
+            </div>
+          </div>
+        } @else {
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-sm font-semibold">{{ p.name }}</p>
+              <p class="text-xs text-gray-400 mb-3">{{ p.role }}</p>
+            </div>
+            <div class="flex gap-2 text-xs text-gray-300">
+              <button (click)="startEdit(p)" class="hover:text-gray-900">✎</button>
+              <button (click)="removePerson(p.id)" class="hover:text-red-500">✕</button>
+            </div>
+          </div>
+          <div class="flex flex-col gap-1 pt-3 border-t border-gray-100 text-xs text-gray-600">
+            @if (p.email) {
+              <a [href]="'mailto:' + p.email" class="hover:text-gray-900">✉ {{ p.email }}</a>
+            }
+            @if (p.phone) {
+              <a [href]="'tel:' + p.phone" class="hover:text-gray-900">☎ {{ p.phone }}</a>
+            }
+          </div>
+        }
       </div>
     }
   </div>

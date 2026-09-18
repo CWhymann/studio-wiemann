@@ -18,6 +18,12 @@ export class Team {
   pEmail = '';
   pPhone = '';
 
+  editingId = signal<number | null>(null);
+  eName = '';
+  eRole = '';
+  eEmail = '';
+  ePhone = '';
+
   constructor(
     public store: ProjectStore,
     private supabase: SupabaseService,
@@ -47,5 +53,31 @@ export class Team {
     this.pEmail = '';
     this.pPhone = '';
     this.showForm.set(false);
+  }
+
+  startEdit(p: Person) {
+    this.editingId.set(p.id);
+    this.eName = p.name;
+    this.eRole = p.role;
+    this.eEmail = p.email;
+    this.ePhone = p.phone;
+  }
+
+  cancelEdit() {
+    this.editingId.set(null);
+  }
+
+  async saveEdit(id: number) {
+    await this.store.updatePerson(id, {
+      name: this.eName.trim(),
+      role: this.eRole.trim(),
+      email: this.eEmail.trim(),
+      phone: this.ePhone.trim(),
+    });
+    this.editingId.set(null);
+  }
+
+  removePerson(id: number) {
+    this.store.removePerson(id);
   }
 }
