@@ -1,44 +1,103 @@
 <div>
-  <div style="display: flex; gap: 8px; margin-bottom: 16px">
-    @for (p of store.people(); track p.id) {
-      <span>{{ p.name }}</span>
-    }
-    <button (click)="toggleForm()">+ Aufgabe</button>
+  <div class="flex flex-wrap items-center gap-3 mb-6">
+    <div class="flex items-center gap-2 flex-1">
+      @for (p of store.people(); track p.id) {
+        <span class="text-xs bg-white border border-gray-200 rounded-full px-3 py-1">{{
+          p.name
+        }}</span>
+      }
+    </div>
+    <button
+      (click)="toggleForm()"
+      class="flex items-center gap-2 bg-gray-900 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-700 transition-colors"
+    >
+      + Aufgabe
+    </button>
   </div>
 
   @if (showForm()) {
-    <form (ngSubmit)="submitTask()" style="margin-bottom: 16px; display: flex; gap: 8px">
-      <input [(ngModel)]="newTitle" name="title" placeholder="Was ist zu tun?" />
-      <select [(ngModel)]="newOwner" name="owner">
+    <form
+      (ngSubmit)="submitTask()"
+      class="mb-6 bg-white border border-gray-200 rounded-2xl p-4 flex flex-col md:flex-row gap-3"
+    >
+      <input
+        [(ngModel)]="newTitle"
+        name="title"
+        placeholder="Was ist zu tun?"
+        class="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/10"
+      />
+      <select
+        [(ngModel)]="newOwner"
+        name="owner"
+        class="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white"
+      >
         @for (p of store.people(); track p.id) {
           <option [value]="p.name">{{ p.name }}</option>
         }
       </select>
-      <select [(ngModel)]="newDue" name="due">
+      <select
+        [(ngModel)]="newDue"
+        name="due"
+        class="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white"
+      >
         @for (d of days; track d) {
           <option [value]="d">{{ d }}</option>
         }
       </select>
-      <button type="submit">Hinzufügen</button>
+      <button
+        type="submit"
+        class="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-700 transition-colors"
+      >
+        Hinzufügen
+      </button>
     </form>
   }
 
-  <div style="display: flex; gap: 16px">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
     @for (s of statuses; track s.key) {
-      <div style="flex: 1; border: 1px solid #ccc; padding: 8px">
-        <h3>{{ s.label }} ({{ columnTasks(s.key).length }})</h3>
-        @for (task of columnTasks(s.key); track task.id) {
-          <div style="border: 1px solid #ddd; padding: 8px; margin-bottom: 8px">
-            <p>{{ task.title }}</p>
-            <small>{{ task.owner }} · {{ task.due }}</small>
-            <select [ngModel]="task.status" (ngModelChange)="store.updateStatus(task.id, $event)">
-              @for (s2 of statuses; track s2.key) {
-                <option [value]="s2.key">{{ s2.label }}</option>
-              }
-            </select>
-            <button (click)="store.removeTask(task.id)">✕</button>
-          </div>
-        }
+      <div class="rounded-2xl p-3">
+        <div class="flex items-center gap-2 mb-3 px-1">
+          <span class="w-2 h-2 rounded-full" [style.background]="s.dot"></span>
+          <h2 class="text-sm font-semibold">{{ s.label }}</h2>
+          <span class="text-xs text-gray-400 ml-1">{{ columnTasks(s.key).length }}</span>
+        </div>
+
+        <div class="flex flex-col gap-2 min-h-[100px]">
+          @if (columnTasks(s.key).length === 0) {
+            <div
+              class="text-xs text-gray-400 border border-dashed border-gray-200 rounded-xl px-3 py-6 text-center"
+            >
+              Nichts hier
+            </div>
+          }
+          @for (task of columnTasks(s.key); track task.id) {
+            <div
+              class="bg-white border border-gray-200 rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow"
+            >
+              <div class="flex items-start justify-between gap-2">
+                <p class="text-sm leading-snug">{{ task.title }}</p>
+                <button
+                  (click)="store.removeTask(task.id)"
+                  class="text-gray-300 hover:text-red-500 transition-colors"
+                >
+                  ✕
+                </button>
+              </div>
+              <div class="flex items-center justify-between mt-3">
+                <span class="text-xs text-gray-400">{{ task.owner }} · {{ task.due }}</span>
+                <select
+                  [ngModel]="task.status"
+                  (ngModelChange)="store.updateStatus(task.id, $event)"
+                  class="text-xs border border-gray-200 rounded-md px-2 py-1 bg-gray-50"
+                >
+                  @for (s2 of statuses; track s2.key) {
+                    <option [value]="s2.key">{{ s2.label }}</option>
+                  }
+                </select>
+              </div>
+            </div>
+          }
+        </div>
       </div>
     }
   </div>

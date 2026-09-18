@@ -1,21 +1,62 @@
-<div style="display: flex; gap: 8px; margin-bottom: 16px">
-  <button (click)="view.set('board')">Board</button>
-  <button (click)="view.set('team')">Team</button>
-  <button (click)="view.set('kalender')">Kalender</button>
-  <button (click)="view.set('dashboard')">Dashboard</button>
-</div>
+<div
+  class="mx-auto"
+  style="
+    max-width: 1440px;
+    padding-inline: clamp(1rem, 4vw, 2.5rem);
+    padding-block: clamp(1.5rem, 4vw, 2.5rem);
+  "
+>
+  <div class="flex items-center gap-1 bg-white border border-gray-200 rounded-full p-1 mb-6 w-fit">
+    <button
+      (click)="view.set('board')"
+      class="px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors"
+      [class.bg-gray-900]="view() === 'board'"
+      [class.text-white]="view() === 'board'"
+      [class.text-gray-500]="view() !== 'board'"
+    >
+      Board
+    </button>
+    <button
+      (click)="view.set('team')"
+      class="px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors"
+      [class.bg-gray-900]="view() === 'team'"
+      [class.text-white]="view() === 'team'"
+      [class.text-gray-500]="view() !== 'team'"
+    >
+      Team
+    </button>
+    <button
+      (click)="view.set('kalender')"
+      class="px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors"
+      [class.bg-gray-900]="view() === 'kalender'"
+      [class.text-white]="view() === 'kalender'"
+      [class.text-gray-500]="view() !== 'kalender'"
+    >
+      Kalender
+    </button>
+    <button
+      (click)="view.set('dashboard')"
+      class="px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors"
+      [class.bg-gray-900]="view() === 'dashboard'"
+      [class.text-white]="view() === 'dashboard'"
+      [class.text-gray-500]="view() !== 'dashboard'"
+    >
+      Dashboard
+    </button>
+  </div>
 
-@switch (view()) {
-  @case ('board') {
-    <app-board />
+  @switch (view()) {
+    @case ('board') {
+      <app-board />
+    }
+    @case ('team') {
+      <app-team />
+    }
+    @case ('kalender') {
+      <app-calendar />
+    }
+    @case ('dashboard') {
+      <app-dashboard />
+    }
   }
-  @case ('team') {
-    <app-team />
-  }
-  @case ('kalender') {
-    <app-calendar />
-  }
-  @case ('dashboard') {
-    <app-dashboard />
-  }
-}
+</div>

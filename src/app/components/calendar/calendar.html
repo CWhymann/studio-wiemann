@@ -1,26 +1,50 @@
 <div>
-  <div style="display: flex; justify-content: space-between; margin-bottom: 16px">
-    <span>{{ formatDayMonth(weekDates[0]) }} – {{ formatDayMonth(weekDates[4]) }}</span>
-    <span>KW {{ weekNumber }}</span>
+  <div class="flex items-center justify-between mb-4 px-1">
+    <span class="text-xs text-gray-400"
+      >{{ formatDayMonth(weekDates[0]) }} – {{ formatDayMonth(weekDates[4]) }}</span
+    >
+    <span class="text-xs font-medium bg-white border border-gray-200 rounded-full px-3 py-1"
+      >KW {{ weekNumber }}</span
+    >
   </div>
 
-  <div style="display: flex; gap: 16px">
+  <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
     @for (day of days; track day; let i = $index) {
       <div
-        style="flex: 1; border: 1px solid #ccc; padding: 8px"
-        [style.border-color]="isToday(weekDates[i]) ? 'orange' : '#ccc'"
+        class="bg-white border rounded-2xl p-3 min-h-[220px]"
+        [class.border-orange-400]="isToday(weekDates[i])"
+        [class.border-gray-200]="!isToday(weekDates[i])"
       >
-        <strong>{{ day }} {{ weekDates[i].getDate() }}.{{ weekDates[i].getMonth() + 1 }}.</strong>
-        @if (isToday(weekDates[i])) {
-          <span> (Heute)</span>
-        }
-
-        @for (task of tasksForDay(day); track task.id) {
-          <div style="border-left: 3px solid; margin: 8px 0; padding-left: 8px;" [style.border-left-color]="statusMeta(task.status).dot">
-            <p>{{ task.title }}</p>
-            <small>{{ task.owner }} · {{ statusMeta(task.status).label }}</small>
+        <div class="flex items-center justify-between mb-3 px-1">
+          <div class="flex items-baseline gap-1.5">
+            <h3 class="text-sm font-semibold">{{ day }}</h3>
+            <span
+              class="text-xs"
+              [class.text-orange-500]="isToday(weekDates[i])"
+              [class.text-gray-400]="!isToday(weekDates[i])"
+            >
+              {{ weekDates[i].getDate() }}.{{ weekDates[i].getMonth() + 1 }}.
+            </span>
           </div>
-        }
+          <span class="text-xs text-gray-400">{{ tasksForDay(day).length }}</span>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          @if (tasksForDay(day).length === 0) {
+            <div class="text-xs text-gray-400 text-center py-4">frei</div>
+          }
+          @for (task of tasksForDay(day); track task.id) {
+            <div
+              class="border border-gray-200 rounded-lg p-2.5"
+              [style.border-left]="'3px solid ' + statusMeta(task.status).dot"
+            >
+              <p class="text-xs leading-snug">{{ task.title }}</p>
+              <p class="text-[10px] text-gray-400 mt-1.5">
+                {{ task.owner }} · {{ statusMeta(task.status).label }}
+              </p>
+            </div>
+          }
+        </div>
       </div>
     }
   </div>

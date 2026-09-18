@@ -1,30 +1,65 @@
 <div>
-  <div style="display: flex; justify-content: space-between; margin-bottom: 16px">
-    <span>{{ store.people().length }} Personen</span>
-    <button (click)="toggleForm()">+ Person</button>
+  <div class="flex items-center justify-between mb-4">
+    <span class="text-xs text-gray-400">{{ store.people().length }} Personen</span>
+    <button
+      (click)="toggleForm()"
+      class="flex items-center gap-2 bg-gray-900 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-700 transition-colors"
+    >
+      + Person
+    </button>
   </div>
 
   @if (showForm()) {
-    <form (ngSubmit)="submit()" style="margin-bottom: 16px; display: flex; gap: 8px">
-      <input [(ngModel)]="pName" name="pName" placeholder="Name" />
-      <input [(ngModel)]="pRole" name="pRole" placeholder="Rolle" />
-      <input [(ngModel)]="pEmail" name="pEmail" placeholder="E-Mail" />
-      <input [(ngModel)]="pPhone" name="pPhone" placeholder="Telefon" />
-      <button type="submit">Speichern</button>
+    <form
+      (ngSubmit)="submit()"
+      class="mb-6 bg-white border border-gray-200 rounded-2xl p-4 grid grid-cols-1 md:grid-cols-5 gap-3"
+    >
+      <input
+        [(ngModel)]="pName"
+        name="pName"
+        placeholder="Name"
+        class="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/10"
+      />
+      <input
+        [(ngModel)]="pRole"
+        name="pRole"
+        placeholder="Rolle"
+        class="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none"
+      />
+      <input
+        [(ngModel)]="pEmail"
+        name="pEmail"
+        placeholder="E-Mail"
+        class="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none"
+      />
+      <input
+        [(ngModel)]="pPhone"
+        name="pPhone"
+        placeholder="Telefon"
+        class="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none"
+      />
+      <button
+        type="submit"
+        class="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-700 transition-colors"
+      >
+        Speichern
+      </button>
     </form>
   }
 
-  <div style="display: flex; gap: 16px; flex-wrap: wrap">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
     @for (p of store.people(); track p.id) {
-      <div style="border: 1px solid #ccc; padding: 12px; width: 220px">
-        <strong>{{ p.name }}</strong>
-        <p>{{ p.role }}</p>
-        @if (p.email) {
-          <p>✉ {{ p.email }}</p>
-        }
-        @if (p.phone) {
-          <p>☎ {{ p.phone }}</p>
-        }
+      <div class="bg-white border border-gray-200 rounded-2xl p-4">
+        <p class="text-sm font-semibold">{{ p.name }}</p>
+        <p class="text-xs text-gray-400 mb-3">{{ p.role }}</p>
+        <div class="flex flex-col gap-1 pt-3 border-t border-gray-100 text-xs text-gray-600">
+          @if (p.email) {
+            <a [href]="'mailto:' + p.email" class="hover:text-gray-900">✉ {{ p.email }}</a>
+          }
+          @if (p.phone) {
+            <a [href]="'tel:' + p.phone" class="hover:text-gray-900">☎ {{ p.phone }}</a>
+          }
+        </div>
       </div>
     }
   </div>

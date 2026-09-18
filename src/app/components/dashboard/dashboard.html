@@ -1,25 +1,59 @@
-<div style="display: flex; gap: 16px">
-  <div style="flex: 1; border: 1px solid #ccc; padding: 12px">
-    <h3>Status-Verteilung</h3>
-    @for (s of statuses; track s.key) {
-      <p>{{ s.label }}: {{ count(s.key) }} ({{ pct(s.key) }}%)</p>
-    }
-    <p>
-      <strong>{{ store.tasks().length }}</strong> Aufgaben insgesamt
-    </p>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+  <div class="bg-white border border-gray-200 rounded-2xl p-5">
+    <h3 class="text-sm font-semibold mb-4">Status-Verteilung</h3>
+    <div class="flex flex-col gap-3">
+      @for (s of statuses; track s.key) {
+        <div>
+          <div class="flex items-center justify-between text-xs mb-1">
+            <span class="flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full" [style.background]="s.dot"></span>
+              {{ s.label }}
+            </span>
+            <span class="text-gray-400">{{ count(s.key) }}</span>
+          </div>
+          <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+            <div
+              class="h-full rounded-full"
+              [style.width.%]="pct(s.key)"
+              [style.background]="s.dot"
+            ></div>
+          </div>
+        </div>
+      }
+    </div>
+    <div class="mt-5 pt-4 border-t border-gray-100 flex items-baseline gap-2">
+      <span class="text-3xl font-semibold">{{ store.tasks().length }}</span>
+      <span class="text-xs text-gray-400">Aufgaben insgesamt</span>
+    </div>
   </div>
 
-  <div style="flex: 1; border: 1px solid #ccc; padding: 12px">
-    <h3>Auslastung pro Person</h3>
-    @for (p of perPerson(); track p.name) {
-      <p>{{ p.name }}: {{ p.total }} Aufgaben</p>
-    }
+  <div class="bg-white border border-gray-200 rounded-2xl p-5">
+    <h3 class="text-sm font-semibold mb-4">Auslastung pro Person</h3>
+    <div class="flex flex-col gap-2">
+      @for (p of perPerson(); track p.name) {
+        <div class="flex items-center justify-between text-xs">
+          <span>{{ p.name }}</span>
+          <span class="text-gray-400">{{ p.total }} Aufgaben</span>
+        </div>
+      }
+    </div>
   </div>
 
-  <div style="flex: 1; border: 1px solid #ccc; padding: 12px">
-    <h3>Woche im Blick</h3>
-    @for (d of days; track d) {
-      <p>{{ d }}: {{ openCountForDay(d) }} offen</p>
-    }
+  <div class="bg-white border border-gray-200 rounded-2xl p-5">
+    <h3 class="text-sm font-semibold mb-4">Woche im Blick</h3>
+    <div class="flex flex-col gap-2">
+      @for (d of days; track d) {
+        <div class="flex items-center gap-3">
+          <span class="text-xs w-6 text-gray-400">{{ d }}</span>
+          <div class="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+            <div
+              class="h-full rounded-full bg-gray-900"
+              [style.width.%]="openCountForDay(d) * 28 > 100 ? 100 : openCountForDay(d) * 28"
+            ></div>
+          </div>
+          <span class="text-xs w-4 text-right">{{ openCountForDay(d) }}</span>
+        </div>
+      }
+    </div>
   </div>
 </div>
