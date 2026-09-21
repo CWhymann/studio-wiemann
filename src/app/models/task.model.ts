@@ -1,4 +1,5 @@
 export type TaskStatus = 'offen' | 'laeuft' | 'fertig';
+export type Priority = 'normal' | 'wichtig' | 'dringend';
 
 export interface StatusMeta {
   key: TaskStatus;
@@ -12,6 +13,19 @@ export const STATUSES: StatusMeta[] = [
   { key: 'fertig', label: 'Fertig', dot: '#16A34A' },
 ];
 
+export interface PriorityMeta {
+  key: Priority;
+  label: string;
+  color: string;
+  weight: number;
+}
+
+export const PRIORITIES: PriorityMeta[] = [
+  { key: 'dringend', label: 'Dringend', color: '#DC2626', weight: 2 },
+  { key: 'wichtig', label: 'Wichtig', color: '#9333EA', weight: 1 },
+  { key: 'normal', label: 'Normal', color: '#9CA3AF', weight: 0 },
+];
+
 export const DAYS = ['Mo', 'Di', 'Mi', 'Do', 'Fr'] as const;
 export type Weekday = (typeof DAYS)[number];
 
@@ -22,6 +36,7 @@ export interface Task {
   status: TaskStatus;
   due: Weekday;
   due_date: string | null;
+  priority: Priority;
   project_key: string;
 }
 

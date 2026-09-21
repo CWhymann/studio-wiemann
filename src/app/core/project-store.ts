@@ -1,6 +1,14 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { SupabaseService } from './supabase';
-import { Task, Person, Project, TaskStatus, Weekday } from '../models/task.model';
+import {
+  Task,
+  Person,
+  Project,
+  TaskStatus,
+  Weekday,
+  Priority,
+  PRIORITIES,
+} from '../models/task.model';
 
 @Injectable({
   providedIn: 'root',
@@ -24,7 +32,11 @@ export class ProjectStore {
 
   readonly allPeople = computed(() => this._people());
 
-  readonly tasks = computed(() => this._tasks().filter((t) => t.project_key === this._activeKey()));
+  readonly tasks = computed(() => {
+    const filtered = this._tasks().filter((t) => t.project_key === this._activeKey());
+    const weight = (p: Priority) => PRIORITIES.find((pr) => pr.key === p)?.weight ?? 0;
+    return [...filtered].sort((a, b) => weight(b.priority) - weight(a.priority));
+  });
 
   readonly avatarColors = computed(() => {
     const map: Record<string, string> = {};
@@ -61,7 +73,7 @@ export class ProjectStore {
     return days[idx];
   }
 
-  async addTask(title: string, owners: string[], dueDate: string) {
+  async addTask(title: string, owners: string[], dueDate: string, priority: Priority = 'normal') {
     const weekday = this.weekdayFromDate(dueDate);
     const { data } = await this.supabase.client
       .from('tasks')
@@ -70,11 +82,12 @@ export class ProjectStore {
         owners,
         due: weekday,
         due_date: dueDate,
+        priority,
         status: 'offen',
         project_key: this._activeKey(),
       })
       .select();
-    if (data) this._tasks.update((prev) => [...prev, ...(data as Task[])]);
+    if (data) this._tasks.update((prev) => [...(data as Task[]), ...prev]);
   }
 
   async updateStatus(id: number, status: TaskStatus) {
@@ -87,7 +100,10 @@ export class ProjectStore {
     this._tasks.update((prev) => prev.filter((t) => t.id !== id));
   }
 
-  async updateTask(id: number, changes: { title?: string; owners?: string[]; due_date?: string }) {
+  async updateTask(
+    id: number,
+    changes: { title?: string; owners?: string[]; due_date?: string; priority?: Priority },
+  ) {
     const patch: any = { ...changes };
     if (changes.due_date) {
       patch.due = this.weekdayFromDate(changes.due_date);

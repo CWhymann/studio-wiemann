@@ -2,7 +2,7 @@ import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProjectStore } from '../../core/project-store';
-import { STATUSES, DAYS, TaskStatus, Task } from '../../models/task.model';
+import { STATUSES, DAYS, TaskStatus, Task, Priority, PRIORITIES } from '../../models/task.model';
 
 @Component({
   selector: 'app-board',
@@ -13,11 +13,13 @@ import { STATUSES, DAYS, TaskStatus, Task } from '../../models/task.model';
 export class Board {
   readonly statuses = STATUSES;
   readonly days = DAYS;
+  readonly priorities = PRIORITIES;
 
   showForm = signal(false);
   newTitle = '';
   newOwners = signal<string[]>([]);
   newDueDate: string = new Date().toISOString().split('T')[0];
+  newPriority = signal<Priority>('normal');
 
   query = signal('');
   personFilter = signal<string>('Alle');
@@ -27,21 +29,24 @@ export class Board {
 
   openStatusMenu = signal<number | null>(null);
   openOwnerMenu = signal(false);
+  openPriorityMenu = signal(false);
 
   editingTaskId = signal<number | null>(null);
   eTitle = '';
   eOwners = signal<string[]>([]);
   eDueDate = '';
+  ePriority = signal<Priority>('normal');
   openEditOwnerMenu = signal(false);
+  openEditPriorityMenu = signal(false);
 
   constructor(public store: ProjectStore) {}
 
   filteredTasks() {
     const q = this.query().toLowerCase();
     const pf = this.personFilter();
-    return this.store.tasks().filter(
-      (t) => t.title.toLowerCase().includes(q) && (pf === 'Alle' || t.owners.includes(pf))
-    );
+    return this.store
+      .tasks()
+      .filter((t) => t.title.toLowerCase().includes(q) && (pf === 'Alle' || t.owners.includes(pf)));
   }
 
   columnTasks(status: TaskStatus) {
@@ -50,6 +55,18 @@ export class Board {
 
   statusMeta(key: string) {
     return this.statuses.find((s) => s.key === key)!;
+  }
+
+  priorityMeta(key: string) {
+    return this.priorities.find((p) => p.key === key)!;
+  }
+
+  dueDateStatus(dueDate: string | null): 'overdue' | 'today' | 'normal' {
+    if (!dueDate) return 'normal';
+    const today = new Date().toISOString().split('T')[0];
+    if (dueDate < today) return 'overdue';
+    if (dueDate === today) return 'today';
+    return 'normal';
   }
 
   toggleForm() {
@@ -65,15 +82,24 @@ export class Board {
   }
   toggleOwnerSelection(name: string) {
     this.newOwners.update((list) =>
-      list.includes(name) ? list.filter((n) => n !== name) : [...list, name]
+      list.includes(name) ? list.filter((n) => n !== name) : [...list, name],
     );
+  }
+
+  togglePriorityMenu() {
+    this.openPriorityMenu.update((o) => !o);
+  }
+  selectPriority(p: Priority) {
+    this.newPriority.set(p);
+    this.openPriorityMenu.set(false);
   }
 
   submitTask() {
     if (!this.newTitle.trim() || this.newOwners().length === 0) return;
-    this.store.addTask(this.newTitle.trim(), this.newOwners(), this.newDueDate);
+    this.store.addTask(this.newTitle.trim(), this.newOwners(), this.newDueDate, this.newPriority());
     this.newTitle = '';
     this.newOwners.set([]);
+    this.newPriority.set('normal');
     this.showForm.set(false);
   }
 
@@ -110,18 +136,27 @@ export class Board {
     this.eTitle = t.title;
     this.eOwners.set([...t.owners]);
     this.eDueDate = t.due_date ?? new Date().toISOString().split('T')[0];
+    this.ePriority.set(t.priority);
   }
   cancelEditTask() {
     this.editingTaskId.set(null);
     this.openEditOwnerMenu.set(false);
+    this.openEditPriorityMenu.set(false);
   }
   toggleEditOwnerMenu() {
     this.openEditOwnerMenu.update((o) => !o);
   }
   toggleEditOwnerSelection(name: string) {
     this.eOwners.update((list) =>
-      list.includes(name) ? list.filter((n) => n !== name) : [...list, name]
+      list.includes(name) ? list.filter((n) => n !== name) : [...list, name],
     );
+  }
+  toggleEditPriorityMenu() {
+    this.openEditPriorityMenu.update((o) => !o);
+  }
+  selectEditPriority(p: Priority) {
+    this.ePriority.set(p);
+    this.openEditPriorityMenu.set(false);
   }
   async saveEditTask(id: number) {
     if (this.eOwners().length === 0) return;
@@ -129,6 +164,7 @@ export class Board {
       title: this.eTitle.trim(),
       owners: this.eOwners(),
       due_date: this.eDueDate,
+      priority: this.ePriority(),
     });
     this.editingTaskId.set(null);
   }
