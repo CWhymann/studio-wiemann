@@ -18,8 +18,10 @@ export class ProjectStore {
   private readonly _people = signal<Person[]>([]);
   private readonly _tasks = signal<Task[]>([]);
   private readonly _activeKey = signal<string>('');
+  private readonly _loading = signal(true);
 
   readonly projects = this._projects.asReadonly();
+  readonly loading = this._loading.asReadonly();
   readonly activeKey = this._activeKey.asReadonly();
 
   readonly activeProject = computed(() =>
@@ -61,6 +63,8 @@ export class ProjectStore {
     }
     if (people) this._people.set(people as Person[]);
     if (tasks) this._tasks.set(tasks as Task[]);
+    await new Promise((resolve) => setTimeout(resolve, 600));
+    this._loading.set(false);
   }
 
   setActiveProject(key: string) {

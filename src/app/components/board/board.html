@@ -191,7 +191,10 @@
         <div class="flex flex-col gap-2 min-h-[100px]">
           @if (columnTasks(s.key).length === 0) {
             <div
-              class="text-xs text-gray-400 border border-dashed border-gray-200 rounded-xl px-3 py-6 text-center"
+              class="text-xs border border-dashed rounded-xl px-3 py-6 text-center"
+              [style.border-color]="s.dot + '40'"
+              [style.color]="s.dot"
+              [style.background]="s.dot + '0D'"
             >
               Nichts hier
             </div>
