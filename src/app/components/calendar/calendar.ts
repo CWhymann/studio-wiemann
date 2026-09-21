@@ -34,17 +34,6 @@ export class Calendar {
   weekNumber = computed(() => getISOWeek(this.weekDates()[0]));
   nextWeekNumber = computed(() => getISOWeek(this.nextWeekDates()[0]));
 
-  jumpToDate(dateStr: string) {
-    if (!dateStr) return;
-    const target = new Date(dateStr);
-    const targetMonday = getMonday(target);
-    const currentMonday = getMonday(new Date());
-    const diffWeeks = Math.round(
-      (targetMonday.getTime() - currentMonday.getTime()) / (7 * 86400000),
-    );
-    this.weekOffset.set(diffWeeks);
-  }
-
   constructor(public store: ProjectStore) {}
 
   prevWeek() {
@@ -55,6 +44,17 @@ export class Calendar {
   }
   thisWeek() {
     this.weekOffset.set(0);
+  }
+
+  jumpToDate(dateStr: string) {
+    if (!dateStr) return;
+    const target = new Date(dateStr);
+    const targetMonday = getMonday(target);
+    const currentMonday = getMonday(new Date());
+    const diffWeeks = Math.round(
+      (targetMonday.getTime() - currentMonday.getTime()) / (7 * 86400000),
+    );
+    this.weekOffset.set(diffWeeks);
   }
 
   tasksForDate(date: Date) {

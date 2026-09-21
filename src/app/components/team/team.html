@@ -199,9 +199,11 @@
                 <p class="text-xs text-gray-400">{{ p.role }}</p>
               </div>
             </div>
-            <div class="flex gap-2 text-xs text-gray-300">
-              <button (click)="startEdit(p)" class="hover:text-gray-900">✎</button>
-              <button (click)="removePerson(p.id)" class="hover:text-red-500">✕</button>
+            <div class="flex gap-2 text-sm text-gray-500">
+              <button (click)="startEdit(p)" class="hover:text-black transition-colors">✎</button>
+              <button (click)="removePerson(p.id)" class="hover:text-red-500 transition-colors">
+                ✕
+              </button>
             </div>
           </div>
           <div class="flex flex-col gap-1 pt-3 border-t border-gray-100 text-xs text-gray-600">

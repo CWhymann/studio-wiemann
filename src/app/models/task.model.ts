@@ -18,7 +18,7 @@ export type Weekday = (typeof DAYS)[number];
 export interface Task {
   id: number;
   title: string;
-  owner: string;
+  owners: string[];
   status: TaskStatus;
   due: Weekday;
   due_date: string | null;

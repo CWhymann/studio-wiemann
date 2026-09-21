@@ -1,6 +1,6 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { SupabaseService } from './supabase';
-import { Task, Person, Project, TaskStatus, Weekday, STATUSES } from '../models/task.model';
+import { Task, Person, Project, TaskStatus, Weekday } from '../models/task.model';
 
 @Injectable({
   providedIn: 'root',
@@ -61,13 +61,13 @@ export class ProjectStore {
     return days[idx];
   }
 
-  async addTask(title: string, owner: string, dueDate: string) {
+  async addTask(title: string, owners: string[], dueDate: string) {
     const weekday = this.weekdayFromDate(dueDate);
     const { data } = await this.supabase.client
       .from('tasks')
       .insert({
         title,
-        owner,
+        owners,
         due: weekday,
         due_date: dueDate,
         status: 'offen',
@@ -85,6 +85,15 @@ export class ProjectStore {
   async removeTask(id: number) {
     await this.supabase.client.from('tasks').delete().eq('id', id);
     this._tasks.update((prev) => prev.filter((t) => t.id !== id));
+  }
+
+  async updateTask(id: number, changes: { title?: string; owners?: string[]; due_date?: string }) {
+    const patch: any = { ...changes };
+    if (changes.due_date) {
+      patch.due = this.weekdayFromDate(changes.due_date);
+    }
+    await this.supabase.client.from('tasks').update(patch).eq('id', id);
+    this._tasks.update((prev) => prev.map((t) => (t.id === id ? { ...t, ...patch } : t)));
   }
 
   async addProject(key: string, name: string) {

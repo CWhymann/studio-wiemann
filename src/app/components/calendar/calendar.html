@@ -71,11 +71,15 @@
                 >
                   <p class="text-xs leading-snug">{{ task.title }}</p>
                   <div class="flex items-center gap-1.5 mt-1.5">
-                    <span
-                      class="w-4 h-4 rounded-full text-[8px] flex items-center justify-center text-white font-semibold"
-                      [style.background]="store.avatarColors()[task.owner]"
-                      >{{ task.owner.slice(0, 2).toUpperCase() }}</span
-                    >
+                    <div class="flex -space-x-1">
+                      @for (owner of task.owners; track owner) {
+                        <span
+                          class="w-4 h-4 rounded-full text-[8px] flex items-center justify-center text-white font-semibold border border-white"
+                          [style.background]="store.avatarColors()[owner]"
+                          >{{ owner.slice(0, 2).toUpperCase() }}</span
+                        >
+                      }
+                    </div>
                     <p class="text-[10px] text-gray-400">{{ statusMeta(task.status).label }}</p>
                   </div>
                 </div>

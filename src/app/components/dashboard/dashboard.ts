@@ -26,7 +26,7 @@ export class Dashboard {
 
   perPerson = computed(() =>
     this.store.people().map((p) => {
-      const own = this.store.tasks().filter((t) => t.owner === p.name);
+      const own = this.store.tasks().filter((t) => t.owners.includes(p.name));
       return { name: p.name, total: own.length };
     }),
   );

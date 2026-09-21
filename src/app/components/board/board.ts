@@ -2,7 +2,7 @@ import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProjectStore } from '../../core/project-store';
-import { STATUSES, DAYS, TaskStatus, Weekday } from '../../models/task.model';
+import { STATUSES, DAYS, TaskStatus, Task } from '../../models/task.model';
 
 @Component({
   selector: 'app-board',
@@ -16,7 +16,7 @@ export class Board {
 
   showForm = signal(false);
   newTitle = '';
-  newOwner = '';
+  newOwners = signal<string[]>([]);
   newDueDate: string = new Date().toISOString().split('T')[0];
 
   query = signal('');
@@ -28,14 +28,20 @@ export class Board {
   openStatusMenu = signal<number | null>(null);
   openOwnerMenu = signal(false);
 
+  editingTaskId = signal<number | null>(null);
+  eTitle = '';
+  eOwners = signal<string[]>([]);
+  eDueDate = '';
+  openEditOwnerMenu = signal(false);
+
   constructor(public store: ProjectStore) {}
 
   filteredTasks() {
     const q = this.query().toLowerCase();
     const pf = this.personFilter();
-    return this.store
-      .tasks()
-      .filter((t) => t.title.toLowerCase().includes(q) && (pf === 'Alle' || t.owner === pf));
+    return this.store.tasks().filter(
+      (t) => t.title.toLowerCase().includes(q) && (pf === 'Alle' || t.owners.includes(pf))
+    );
   }
 
   columnTasks(status: TaskStatus) {
@@ -48,24 +54,26 @@ export class Board {
 
   toggleForm() {
     this.showForm.update((s) => !s);
-    if (this.showForm() && !this.newOwner) {
-      this.newOwner = this.store.people()[0]?.name ?? '';
+    if (this.showForm() && this.newOwners().length === 0) {
+      const first = this.store.people()[0]?.name;
+      if (first) this.newOwners.set([first]);
     }
   }
 
   toggleOwnerMenu() {
     this.openOwnerMenu.update((o) => !o);
   }
-
-  selectOwner(name: string) {
-    this.newOwner = name;
-    this.openOwnerMenu.set(false);
+  toggleOwnerSelection(name: string) {
+    this.newOwners.update((list) =>
+      list.includes(name) ? list.filter((n) => n !== name) : [...list, name]
+    );
   }
 
   submitTask() {
-    if (!this.newTitle.trim()) return;
-    this.store.addTask(this.newTitle.trim(), this.newOwner, this.newDueDate);
+    if (!this.newTitle.trim() || this.newOwners().length === 0) return;
+    this.store.addTask(this.newTitle.trim(), this.newOwners(), this.newDueDate);
     this.newTitle = '';
+    this.newOwners.set([]);
     this.showForm.set(false);
   }
 
@@ -92,9 +100,36 @@ export class Board {
   toggleStatusMenu(taskId: number) {
     this.openStatusMenu.update((id) => (id === taskId ? null : taskId));
   }
-
   selectStatus(taskId: number, status: TaskStatus) {
     this.store.updateStatus(taskId, status);
     this.openStatusMenu.set(null);
+  }
+
+  startEditTask(t: Task) {
+    this.editingTaskId.set(t.id);
+    this.eTitle = t.title;
+    this.eOwners.set([...t.owners]);
+    this.eDueDate = t.due_date ?? new Date().toISOString().split('T')[0];
+  }
+  cancelEditTask() {
+    this.editingTaskId.set(null);
+    this.openEditOwnerMenu.set(false);
+  }
+  toggleEditOwnerMenu() {
+    this.openEditOwnerMenu.update((o) => !o);
+  }
+  toggleEditOwnerSelection(name: string) {
+    this.eOwners.update((list) =>
+      list.includes(name) ? list.filter((n) => n !== name) : [...list, name]
+    );
+  }
+  async saveEditTask(id: number) {
+    if (this.eOwners().length === 0) return;
+    await this.store.updateTask(id, {
+      title: this.eTitle.trim(),
+      owners: this.eOwners(),
+      due_date: this.eDueDate,
+    });
+    this.editingTaskId.set(null);
   }
 }
