@@ -37,6 +37,7 @@ export interface Task {
   due: Weekday;
   due_date: string | null;
   priority: Priority;
+  position: number;
   project_key: string;
 }
 

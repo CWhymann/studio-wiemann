@@ -39,7 +39,9 @@ export class ProjectStore {
   readonly tasks = computed(() => {
     const filtered = this._tasks().filter((t) => t.project_key === this._activeKey());
     const weight = (p: Priority) => PRIORITIES.find((pr) => pr.key === p)?.weight ?? 0;
-    return [...filtered].sort((a, b) => weight(b.priority) - weight(a.priority) || b.id - a.id);
+    return [...filtered].sort(
+      (a, b) => weight(b.priority) - weight(a.priority) || a.position - b.position || b.id - a.id,
+    );
   });
 
   readonly avatarColors = computed(() => {
@@ -93,6 +95,7 @@ export class ProjectStore {
 
   async addTask(title: string, owners: string[], dueDate: string, priority: Priority = 'normal') {
     const weekday = this.weekdayFromDate(dueDate);
+    const minPosition = Math.min(0, ...this._tasks().map((t) => t.position ?? 0));
     const { data } = await this.supabase.client
       .from('tasks')
       .insert({
@@ -101,11 +104,37 @@ export class ProjectStore {
         due: weekday,
         due_date: dueDate,
         priority,
+        position: minPosition - 1,
         status: 'offen',
         project_key: this._activeKey(),
       })
       .select();
     if (data) this._tasks.update((prev) => [...(data as Task[]), ...prev]);
+  }
+
+  async reorderTask(draggedId: number, targetId: number) {
+    const dragged = this.tasks().find((t) => t.id === draggedId);
+    const target = this.tasks().find((t) => t.id === targetId);
+    if (!dragged || !target || dragged.id === target.id) return;
+    if (dragged.priority !== target.priority || dragged.status !== target.status) return;
+
+    const group = this.tasks().filter(
+      (t) => t.priority === target.priority && t.status === target.status,
+    );
+    const withoutDragged = group.filter((t) => t.id !== dragged.id);
+    const targetIdx = withoutDragged.findIndex((t) => t.id === target.id);
+    withoutDragged.splice(targetIdx, 0, dragged);
+
+    const positionById = new Map(withoutDragged.map((t, i) => [t.id, i]));
+    this._tasks.update((prev) =>
+      prev.map((t) => (positionById.has(t.id) ? { ...t, position: positionById.get(t.id)! } : t)),
+    );
+
+    await Promise.all(
+      withoutDragged.map((t, i) =>
+        this.supabase.client.from('tasks').update({ position: i }).eq('id', t.id),
+      ),
+    );
   }
 
   async updateStatus(id: number, status: TaskStatus) {

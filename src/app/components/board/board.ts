@@ -26,6 +26,7 @@ export class Board {
 
   dragId = signal<number | null>(null);
   dragOverCol = signal<TaskStatus | null>(null);
+  dragOverTaskId = signal<number | null>(null);
 
   openStatusMenu = signal<number | null>(null);
   openOwnerMenu = signal(false);
@@ -121,6 +122,33 @@ export class Board {
     if (id != null) this.store.updateStatus(id, status);
     this.dragId.set(null);
     this.dragOverCol.set(null);
+    this.dragOverTaskId.set(null);
+  }
+
+  onDragOverTask(e: DragEvent, taskId: number) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.dragOverTaskId.set(taskId);
+  }
+  onDropOnTask(e: DragEvent, status: TaskStatus, targetId: number) {
+    e.preventDefault();
+    e.stopPropagation();
+    const id = this.dragId();
+    if (id != null) {
+      if (id === targetId) {
+        // nichts zu tun
+      } else {
+        const dragged = this.store.tasks().find((t) => t.id === id);
+        if (dragged && dragged.status === status) {
+          this.store.reorderTask(id, targetId);
+        } else {
+          this.store.updateStatus(id, status);
+        }
+      }
+    }
+    this.dragId.set(null);
+    this.dragOverCol.set(null);
+    this.dragOverTaskId.set(null);
   }
 
   toggleStatusMenu(taskId: number) {

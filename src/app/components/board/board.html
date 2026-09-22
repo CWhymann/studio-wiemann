@@ -204,8 +204,12 @@
               draggable="true"
               (dragstart)="onDragStart(task.id)"
               (dragend)="onDragEnd()"
+              (dragover)="onDragOverTask($event, task.id)"
+              (drop)="onDropOnTask($event, s.key, task.id)"
               class="card-accent bg-white rounded-xl p-3"
               [class.opacity-40]="dragId() === task.id"
+              [class.ring-2]="dragOverTaskId() === task.id && dragId() !== task.id"
+              [class.ring-gray-300]="dragOverTaskId() === task.id && dragId() !== task.id"
               [style.--card-color]="store.avatarColors()[task.owners[0]]"
             >
               @if (editingTaskId() === task.id) {
@@ -344,13 +348,11 @@
               } @else {
                 <div class="flex items-start justify-between gap-2">
                   <div class="flex items-start gap-1.5">
-                    @if (task.priority !== 'normal') {
-                      <span
-                        class="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0"
-                        [style.background]="priorityMeta(task.priority).color"
-                        [title]="priorityMeta(task.priority).label"
-                      ></span>
-                    }
+                    <span
+                      class="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0"
+                      [style.background]="priorityMeta(task.priority).color"
+                      [title]="priorityMeta(task.priority).label"
+                    ></span>
                     <p class="text-sm leading-snug">{{ task.title }}</p>
                   </div>
                   <div class="flex items-center gap-2 shrink-0">
