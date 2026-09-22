@@ -7,7 +7,7 @@
       >
         ‹
       </button>
-      <span class="text-xs text-gray-400"
+      <span class="text-base text-gray-400"
         >{{ formatDayMonth(weekDates()[0]) }} – {{ formatDayMonth(nextWeekDates()[4]) }}</span
       >
       <button
@@ -17,25 +17,25 @@
         ›
       </button>
       @if (weekOffset() !== 0) {
-        <button (click)="thisWeek()" class="text-xs text-gray-400 underline ml-1">Heute</button>
+        <button (click)="thisWeek()" class="text-base text-gray-400 underline ml-1">Heute</button>
       }
     </div>
 
     <input
       type="date"
       (change)="jumpToDate($any($event.target).value)"
-      class="text-xs border border-gray-200 rounded-full px-3 py-1.5 bg-white"
+      class="text-base border border-gray-200 rounded-full px-3 py-1.5 bg-white"
     />
   </div>
 
   @for (week of [weekDates(), nextWeekDates()]; track $index) {
     <div class="mb-6">
       <div class="flex items-center gap-2 mb-2 px-1">
-        <span class="text-xs font-medium bg-white border border-gray-200 rounded-full px-3 py-1">
+        <span class="text-base font-medium bg-white border border-gray-200 rounded-full px-3 py-1">
           KW {{ $index === 0 ? weekNumber() : nextWeekNumber() }}
         </span>
         @if ($index === 1) {
-          <span class="text-xs text-gray-400">Folgewoche</span>
+          <span class="text-base text-gray-400">Folgewoche</span>
         }
       </div>
 
@@ -48,39 +48,39 @@
           >
             <div class="flex items-center justify-between mb-3 px-1">
               <div class="flex items-baseline gap-1.5">
-                <h3 class="text-sm font-semibold">{{ day }}</h3>
+                <h3 class="text-base font-semibold">{{ day }}</h3>
                 <span
-                  class="text-xs"
+                  class="text-base"
                   [class.text-orange-500]="isToday(week[i])"
                   [class.text-gray-400]="!isToday(week[i])"
                 >
                   {{ week[i].getDate() }}.{{ week[i].getMonth() + 1 }}.
                 </span>
               </div>
-              <span class="text-xs text-gray-400">{{ tasksForDate(week[i]).length }}</span>
+              <span class="text-base text-gray-400">{{ tasksForDate(week[i]).length }}</span>
             </div>
 
             <div class="flex flex-col gap-2">
               @if (tasksForDate(week[i]).length === 0) {
-                <div class="text-xs text-gray-400 text-center py-4">frei</div>
+                <div class="text-base text-gray-400 text-center py-4">frei</div>
               }
               @for (task of tasksForDate(week[i]); track task.id) {
                 <div
                   class="card-neutral rounded-lg p-2.5"
                   [style.border-left]="'4px solid ' + statusMeta(task.status).dot"
                 >
-                  <p class="text-xs leading-snug">{{ task.title }}</p>
+                  <p class="text-base leading-snug">{{ task.title }}</p>
                   <div class="flex items-center gap-1.5 mt-1.5">
                     <div class="flex -space-x-1">
                       @for (owner of task.owners; track owner) {
                         <span
-                          class="w-4 h-4 rounded-full text-[8px] flex items-center justify-center text-white font-semibold border border-white"
+                          class="w-8 h-8 rounded-full text-base flex items-center justify-center text-white font-semibold border border-white"
                           [style.background]="store.avatarColors()[owner]"
                           >{{ owner.slice(0, 2).toUpperCase() }}</span
                         >
                       }
                     </div>
-                    <p class="text-[10px] text-gray-400">{{ statusMeta(task.status).label }}</p>
+                    <p class="text-base text-gray-400">{{ statusMeta(task.status).label }}</p>
                   </div>
                 </div>
               }

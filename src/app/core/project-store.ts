@@ -173,6 +173,24 @@ export class ProjectStore {
     }
   }
 
+  async renameProject(key: string, name: string) {
+    await this.supabase.client.from('projects').update({ name }).eq('key', key);
+    this._projects.update((prev) => prev.map((p) => (p.key === key ? { ...p, name } : p)));
+  }
+
+  async removeProject(key: string) {
+    await this.supabase.client.from('tasks').delete().eq('project_key', key);
+    await this.supabase.client.from('projects').delete().eq('key', key);
+
+    this._tasks.update((prev) => prev.filter((t) => t.project_key !== key));
+    this._projects.update((prev) => prev.filter((p) => p.key !== key));
+
+    if (this._activeKey() === key) {
+      const next = this._projects()[0];
+      if (next) this._activeKey.set(next.key);
+    }
+  }
+
   async removePerson(id: number) {
     await this.supabase.client.from('people').delete().eq('id', id);
     this._people.update((prev) => prev.filter((p) => p.id !== id));

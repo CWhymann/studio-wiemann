@@ -5,13 +5,13 @@
       (ngModelChange)="query.set($event)"
       name="boardSearch"
       placeholder="Aufgabe suchen…"
-      class="flex-1 min-w-[180px] bg-white border border-gray-200 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/10"
+      class="flex-1 min-w-[180px] bg-white border border-gray-200 rounded-full px-4 py-2 text-base focus:outline-none focus:ring-2 focus:ring-gray-900/10"
     />
 
     <div class="flex items-center gap-1 bg-white border border-gray-200 rounded-full p-1 flex-wrap">
       <button
         (click)="personFilter.set('Alle')"
-        class="px-3 py-1.5 rounded-full text-xs font-medium transition-colors"
+        class="px-3 py-1.5 rounded-full text-base font-medium transition-colors"
         [class.bg-gray-900]="personFilter() === 'Alle'"
         [class.text-white]="personFilter() === 'Alle'"
         [class.text-gray-500]="personFilter() !== 'Alle'"
@@ -21,7 +21,7 @@
       @for (p of store.people(); track p.id) {
         <button
           (click)="personFilter.set(p.name)"
-          class="px-3 py-1.5 rounded-full text-xs font-medium transition-colors"
+          class="px-3 py-1.5 rounded-full text-base font-medium transition-colors"
           [class.bg-gray-900]="personFilter() === p.name"
           [class.text-white]="personFilter() === p.name"
           [class.text-gray-500]="personFilter() !== p.name"
@@ -33,7 +33,7 @@
 
     <button
       (click)="toggleForm()"
-      class="flex items-center gap-2 bg-gray-900 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-700 transition-colors"
+      class="flex items-center gap-2 bg-gray-900 text-white px-4 py-2 rounded-full text-base font-medium hover:bg-gray-700 transition-colors"
     >
       + Aufgabe
     </button>
@@ -48,14 +48,14 @@
         [(ngModel)]="newTitle"
         name="title"
         placeholder="Was ist zu tun?"
-        class="flex-1 border border-gray-200 rounded-full px-4 py-2 text-sm bg-gray-50 hover:bg-white focus:outline-none focus:ring-2 focus:ring-gray-900/10 transition-colors"
+        class="flex-1 border border-gray-200 rounded-full px-4 py-2 text-base bg-gray-50 hover:bg-white focus:outline-none focus:ring-2 focus:ring-gray-900/10 transition-colors"
       />
 
       <div class="relative">
         <button
           type="button"
           (click)="toggleOwnerMenu()"
-          class="border border-gray-200 rounded-full px-4 py-2 text-sm bg-gray-50 hover:bg-white transition-colors flex items-center gap-1.5 min-w-[160px]"
+          class="border border-gray-200 rounded-full px-4 py-2 text-base bg-gray-50 hover:bg-white transition-colors flex items-center gap-1.5 min-w-[160px]"
         >
           {{ newOwners().length ? newOwners().join(', ') : 'Personen wählen' }}
           <svg
@@ -81,7 +81,7 @@
               <button
                 type="button"
                 (click)="toggleOwnerSelection(p.name)"
-                class="w-full text-left px-3 py-2 text-xs flex items-center gap-2 hover:bg-gray-50"
+                class="w-full text-left px-3 py-2 text-base flex items-center gap-2 hover:bg-gray-50"
               >
                 <span
                   class="w-4 h-4 rounded border flex items-center justify-center shrink-0"
@@ -102,7 +102,7 @@
                   }
                 </span>
                 <span
-                  class="w-4 h-4 rounded-full text-[9px] flex items-center justify-center text-white font-semibold shrink-0"
+                  class="w-8 h-8 rounded-full text-base flex items-center justify-center text-white font-semibold shrink-0"
                   [style.background]="store.avatarColors()[p.name]"
                   >{{ p.name.slice(0, 2).toUpperCase() }}</span
                 >
@@ -117,7 +117,7 @@
         <button
           type="button"
           (click)="togglePriorityMenu()"
-          class="border border-gray-200 rounded-full px-4 py-2 text-sm bg-gray-50 hover:bg-white transition-colors flex items-center gap-1.5 min-w-[120px]"
+          class="border border-gray-200 rounded-full px-4 py-2 text-base bg-gray-50 hover:bg-white transition-colors flex items-center gap-1.5 min-w-[120px]"
         >
           <span
             class="w-2 h-2 rounded-full"
@@ -147,7 +147,7 @@
               <button
                 type="button"
                 (click)="selectPriority(p.key)"
-                class="w-full text-left px-3 py-2 text-xs flex items-center gap-2 hover:bg-gray-50"
+                class="w-full text-left px-3 py-2 text-base flex items-center gap-2 hover:bg-gray-50"
               >
                 <span class="w-2 h-2 rounded-full" [style.background]="p.color"></span>
                 {{ p.label }}
@@ -161,12 +161,12 @@
         type="date"
         [(ngModel)]="newDueDate"
         name="dueDate"
-        class="border border-gray-200 rounded-full px-4 py-2 text-sm bg-gray-50 hover:bg-white focus:outline-none focus:ring-2 focus:ring-gray-900/10 transition-colors"
+        class="border border-gray-200 rounded-full px-4 py-2 text-base bg-gray-50 hover:bg-white focus:outline-none focus:ring-2 focus:ring-gray-900/10 transition-colors"
       />
 
       <button
         type="submit"
-        class="bg-gray-900 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-700 transition-colors"
+        class="bg-gray-900 text-white px-4 py-2 rounded-full text-base font-medium hover:bg-gray-700 transition-colors"
       >
         Hinzufügen
       </button>
@@ -184,14 +184,14 @@
       >
         <div class="flex items-center gap-2 mb-3 px-1">
           <span class="w-2 h-2 rounded-full" [style.background]="s.dot"></span>
-          <h2 class="text-sm font-semibold">{{ s.label }}</h2>
-          <span class="text-xs text-gray-400 ml-1">{{ columnTasks(s.key).length }}</span>
+          <h2 class="text-base font-semibold">{{ s.label }}</h2>
+          <span class="text-base text-gray-400 ml-1">{{ columnTasks(s.key).length }}</span>
         </div>
 
         <div class="flex flex-col gap-2 min-h-[100px]">
           @if (columnTasks(s.key).length === 0) {
             <div
-              class="text-xs border border-dashed rounded-xl px-3 py-6 text-center"
+              class="text-base border border-dashed rounded-xl px-3 py-6 text-center"
               [style.border-color]="s.dot + '40'"
               [style.color]="s.dot"
               [style.background]="s.dot + '0D'"
@@ -217,14 +217,14 @@
                   <input
                     [(ngModel)]="eTitle"
                     name="eTitle-{{ task.id }}"
-                    class="border border-gray-200 rounded-full px-3 py-1.5 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-900/10"
+                    class="border border-gray-200 rounded-full px-3 py-1.5 text-base bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-900/10"
                   />
 
                   <div class="relative">
                     <button
                       type="button"
                       (click)="toggleEditOwnerMenu()"
-                      class="w-full border border-gray-200 rounded-full px-3 py-1.5 text-sm bg-gray-50 flex items-center gap-1.5"
+                      class="w-full border border-gray-200 rounded-full px-3 py-1.5 text-base bg-gray-50 flex items-center gap-1.5"
                     >
                       {{ eOwners().join(', ') }}
                       <svg
@@ -250,7 +250,7 @@
                           <button
                             type="button"
                             (click)="toggleEditOwnerSelection(p.name)"
-                            class="w-full text-left px-3 py-2 text-xs flex items-center gap-2 hover:bg-gray-50"
+                            class="w-full text-left px-3 py-2 text-base flex items-center gap-2 hover:bg-gray-50"
                           >
                             <span
                               class="w-4 h-4 rounded border flex items-center justify-center shrink-0"
@@ -271,7 +271,7 @@
                               }
                             </span>
                             <span
-                              class="w-4 h-4 rounded-full text-[9px] flex items-center justify-center text-white font-semibold shrink-0"
+                              class="w-8 h-8 rounded-full text-base flex items-center justify-center text-white font-semibold shrink-0"
                               [style.background]="store.avatarColors()[p.name]"
                               >{{ p.name.slice(0, 2).toUpperCase() }}</span
                             >
@@ -286,7 +286,7 @@
                     <button
                       type="button"
                       (click)="toggleEditPriorityMenu()"
-                      class="w-full border border-gray-200 rounded-full px-3 py-1.5 text-sm bg-gray-50 flex items-center gap-1.5"
+                      class="w-full border border-gray-200 rounded-full px-3 py-1.5 text-base bg-gray-50 flex items-center gap-1.5"
                     >
                       <span
                         class="w-2 h-2 rounded-full"
@@ -316,7 +316,7 @@
                           <button
                             type="button"
                             (click)="selectEditPriority(p.key)"
-                            class="w-full text-left px-3 py-2 text-xs flex items-center gap-2 hover:bg-gray-50"
+                            class="w-full text-left px-3 py-2 text-base flex items-center gap-2 hover:bg-gray-50"
                           >
                             <span class="w-2 h-2 rounded-full" [style.background]="p.color"></span>
                             {{ p.label }}
@@ -330,17 +330,17 @@
                     type="date"
                     [(ngModel)]="eDueDate"
                     name="eDueDate-{{ task.id }}"
-                    class="border border-gray-200 rounded-full px-3 py-1.5 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-900/10"
+                    class="border border-gray-200 rounded-full px-3 py-1.5 text-base bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-900/10"
                   />
 
                   <div class="flex gap-2 mt-1">
                     <button
                       (click)="saveEditTask(task.id)"
-                      class="text-xs bg-gray-900 text-white px-3 py-1 rounded-full"
+                      class="text-base bg-gray-900 text-white px-3 py-1 rounded-full"
                     >
                       Speichern
                     </button>
-                    <button (click)="cancelEditTask()" class="text-xs text-gray-400 px-3 py-1">
+                    <button (click)="cancelEditTask()" class="text-base text-gray-400 px-3 py-1">
                       Abbrechen
                     </button>
                   </div>
@@ -353,7 +353,7 @@
                       [style.background]="priorityMeta(task.priority).color"
                       [title]="priorityMeta(task.priority).label"
                     ></span>
-                    <p class="text-sm leading-snug">{{ task.title }}</p>
+                    <p class="text-base leading-snug">{{ task.title }}</p>
                   </div>
                   <div class="flex items-center gap-2 shrink-0">
                     <button
@@ -363,7 +363,7 @@
                       ✎
                     </button>
                     <button
-                      (click)="store.removeTask(task.id)"
+                      (click)="confirmDeleteTask(task)"
                       class="text-gray-500 hover:text-red-500 transition-colors"
                     >
                       ✕
@@ -375,14 +375,14 @@
                     <div class="flex -space-x-1.5">
                       @for (owner of task.owners; track owner) {
                         <span
-                          class="w-5 h-5 rounded-full text-[10px] flex items-center justify-center text-white font-semibold border-2 border-white"
+                          class="w-8 h-8 rounded-full text-base flex items-center justify-center text-white font-semibold border-2 border-white"
                           [style.background]="store.avatarColors()[owner]"
                           >{{ owner.slice(0, 2).toUpperCase() }}</span
                         >
                       }
                     </div>
                     <span
-                      class="text-xs ml-1 font-medium"
+                      class="text-base ml-1 font-medium"
                       [class.text-red-500]="
                         task.status !== 'fertig' && dueDateStatus(task.due_date) === 'overdue'
                       "
@@ -401,7 +401,7 @@
                   <div class="relative">
                     <button
                       (click)="toggleStatusMenu(task.id)"
-                      class="text-xs rounded-full px-3 py-1 bg-gray-50 border border-gray-200 flex items-center gap-1.5"
+                      class="text-base rounded-full px-3 py-1 bg-gray-50 border border-gray-200 flex items-center gap-1.5"
                     >
                       <span
                         class="w-1.5 h-1.5 rounded-full"
@@ -430,7 +430,7 @@
                         @for (s2 of statuses; track s2.key) {
                           <button
                             (click)="selectStatus(task.id, s2.key)"
-                            class="w-full text-left px-3 py-1.5 text-xs flex items-center gap-1.5 hover:bg-gray-50"
+                            class="w-full text-left px-3 py-1.5 text-base flex items-center gap-1.5 hover:bg-gray-50"
                           >
                             <span
                               class="w-1.5 h-1.5 rounded-full"
@@ -450,4 +450,30 @@
       </div>
     }
   </div>
+
+  @if (deleteTarget(); as t) {
+    <div
+      class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4"
+      (click)="cancelDeleteTask()"
+    >
+      <div class="bg-white rounded-2xl p-5 max-w-sm w-full" (click)="$event.stopPropagation()">
+        <h3 class="text-base font-semibold mb-2">Aufgabe löschen?</h3>
+        <p class="text-base text-gray-500 mb-5">„{{ t.title }}" wird unwiderruflich gelöscht.</p>
+        <div class="flex justify-end gap-2">
+          <button
+            (click)="cancelDeleteTask()"
+            class="text-base px-4 py-2 rounded-full text-gray-500 hover:bg-gray-100 transition-colors"
+          >
+            Abbrechen
+          </button>
+          <button
+            (click)="performDeleteTask()"
+            class="text-base px-4 py-2 rounded-full bg-red-500 text-white hover:bg-red-600 transition-colors"
+          >
+            Löschen
+          </button>
+        </div>
+      </div>
+    </div>
+  }
 </div>

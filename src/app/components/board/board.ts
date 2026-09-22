@@ -40,6 +40,8 @@ export class Board {
   openEditOwnerMenu = signal(false);
   openEditPriorityMenu = signal(false);
 
+  deleteTarget = signal<Task | null>(null);
+
   constructor(public store: ProjectStore) {}
 
   filteredTasks() {
@@ -195,5 +197,17 @@ export class Board {
       priority: this.ePriority(),
     });
     this.editingTaskId.set(null);
+  }
+
+  confirmDeleteTask(task: Task) {
+    this.deleteTarget.set(task);
+  }
+  cancelDeleteTask() {
+    this.deleteTarget.set(null);
+  }
+  performDeleteTask() {
+    const t = this.deleteTarget();
+    if (t) this.store.removeTask(t.id);
+    this.deleteTarget.set(null);
   }
 }
