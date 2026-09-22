@@ -27,9 +27,27 @@ export class Dashboard {
   perPerson = computed(() =>
     this.store.people().map((p) => {
       const own = this.store.tasks().filter((t) => t.owners.includes(p.name));
-      return { name: p.name, total: own.length };
+      return { name: p.name, total: own.length, color: this.store.avatarColors()[p.name] };
     }),
   );
+
+  maxPersonTotal = computed(() => Math.max(1, ...this.perPerson().map((p) => p.total)));
+
+  statusConicGradient = computed(() => {
+    const total = this.store.tasks().length;
+    if (!total) return 'conic-gradient(#E5E7EB 0deg 360deg)';
+    let acc = 0;
+    const stops: string[] = [];
+    for (const s of this.statuses) {
+      const c = this.count(s.key);
+      if (!c) continue;
+      const start = (acc / total) * 360;
+      acc += c;
+      const end = (acc / total) * 360;
+      stops.push(`${s.dot} ${start}deg ${end}deg`);
+    }
+    return `conic-gradient(${stops.join(', ')})`;
+  });
 
   openCountForDay(day: string) {
     return this.store.tasks().filter((t) => t.due === day && t.status !== 'fertig').length;
