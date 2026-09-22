@@ -8,9 +8,6 @@
 >
   @if (store.loading()) {
     <div class="animate-pulse relative">
-      <div
-        class="absolute -top-1 right-0 w-5 h-5 border-2 border-gray-200 border-t-gray-900 rounded-full animate-spin"
-      ></div>
       <div class="h-4 w-40 bg-gray-200 rounded-full mb-6"></div>
       <div class="flex gap-1 mb-6">
         <div class="h-8 w-20 bg-gray-200 rounded-full"></div>
@@ -29,6 +26,14 @@
           </div>
         }
       </div>
+    </div>
+
+    <div class="fixed inset-0 flex items-center justify-center pointer-events-none z-50">
+      <img
+        src="img/favicon_final.png"
+        alt="Lädt"
+        class="w-16 h-16 rounded-full shadow-lg animate-spin"
+      />
     </div>
   } @else {
     <div class="relative mb-4 w-fit">

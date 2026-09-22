@@ -14,6 +14,8 @@ import {
   providedIn: 'root',
 })
 export class ProjectStore {
+  private readonly MIN_LOADING_MS = 1500;
+
   private readonly _projects = signal<Project[]>([]);
   private readonly _people = signal<Person[]>([]);
   private readonly _tasks = signal<Task[]>([]);
@@ -37,7 +39,7 @@ export class ProjectStore {
   readonly tasks = computed(() => {
     const filtered = this._tasks().filter((t) => t.project_key === this._activeKey());
     const weight = (p: Priority) => PRIORITIES.find((pr) => pr.key === p)?.weight ?? 0;
-    return [...filtered].sort((a, b) => weight(b.priority) - weight(a.priority));
+    return [...filtered].sort((a, b) => weight(b.priority) - weight(a.priority) || b.id - a.id);
   });
 
   readonly avatarColors = computed(() => {
@@ -51,9 +53,17 @@ export class ProjectStore {
   }
 
   async loadAll() {
-    const { data: projects } = await this.supabase.client.from('projects').select('*');
-    const { data: people } = await this.supabase.client.from('people').select('*');
-    const { data: tasks } = await this.supabase.client.from('tasks').select('*');
+    const startedAt = Date.now();
+
+    const [projectsRes, peopleRes, tasksRes] = await Promise.all([
+      this.supabase.client.from('projects').select('*'),
+      this.supabase.client.from('people').select('*'),
+      this.supabase.client.from('tasks').select('*'),
+    ]);
+
+    const projects = projectsRes.data;
+    const people = peopleRes.data;
+    const tasks = tasksRes.data;
 
     if (projects) {
       this._projects.set(projects as Project[]);
@@ -63,7 +73,11 @@ export class ProjectStore {
     }
     if (people) this._people.set(people as Person[]);
     if (tasks) this._tasks.set(tasks as Task[]);
-    await new Promise((resolve) => setTimeout(resolve, 600));
+
+    const remaining = this.MIN_LOADING_MS - (Date.now() - startedAt);
+    if (remaining > 0) {
+      await new Promise((resolve) => setTimeout(resolve, remaining));
+    }
     this._loading.set(false);
   }
 
@@ -95,8 +109,10 @@ export class ProjectStore {
   }
 
   async updateStatus(id: number, status: TaskStatus) {
-    await this.supabase.client.from('tasks').update({ status }).eq('id', id);
-    this._tasks.update((prev) => prev.map((t) => (t.id === id ? { ...t, status } : t)));
+    const patch: { status: TaskStatus; priority?: Priority } = { status };
+    if (status === 'fertig') patch.priority = 'normal';
+    await this.supabase.client.from('tasks').update(patch).eq('id', id);
+    this._tasks.update((prev) => prev.map((t) => (t.id === id ? { ...t, ...patch } : t)));
   }
 
   async removeTask(id: number) {

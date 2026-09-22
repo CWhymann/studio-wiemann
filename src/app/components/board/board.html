@@ -381,11 +381,17 @@
                     </div>
                     <span
                       class="text-xs ml-1 font-medium"
-                      [class.text-red-500]="dueDateStatus(task.due_date) === 'overdue'"
-                      [class.text-purple-500]="dueDateStatus(task.due_date) === 'today'"
-                      [class.text-gray-400]="dueDateStatus(task.due_date) === 'normal'"
+                      [class.text-red-500]="
+                        task.status !== 'fertig' && dueDateStatus(task.due_date) === 'overdue'
+                      "
+                      [class.text-purple-500]="
+                        task.status !== 'fertig' && dueDateStatus(task.due_date) === 'today'
+                      "
+                      [class.text-gray-400]="
+                        task.status === 'fertig' || dueDateStatus(task.due_date) === 'normal'
+                      "
                       >{{ task.due_date }}
-                      @if (dueDateStatus(task.due_date) === 'overdue') {
+                      @if (task.status !== 'fertig' && dueDateStatus(task.due_date) === 'overdue') {
                         (überfällig)
                       }
                     </span>
