@@ -47,6 +47,8 @@ export class Calendar {
     this.weekOffset.set(0);
   }
 
+  highlightedDate = signal<string | null>(null);
+
   jumpToDate(dateStr: string) {
     if (!dateStr) return;
     const target = new Date(dateStr);
@@ -56,11 +58,24 @@ export class Calendar {
       (targetMonday.getTime() - currentMonday.getTime()) / (7 * 86400000),
     );
     this.weekOffset.set(diffWeeks);
+
+    this.highlightedDate.set(dateStr);
+    setTimeout(() => {
+      const el = document.getElementById('day-' + dateStr);
+      el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 0);
+    setTimeout(() => {
+      if (this.highlightedDate() === dateStr) this.highlightedDate.set(null);
+    }, 2000);
   }
 
   tasksForDate(date: Date) {
     const dateStr = date.toISOString().split('T')[0];
     return this.store.tasks().filter((t) => t.due_date === dateStr);
+  }
+
+  dateId(date: Date) {
+    return date.toISOString().split('T')[0];
   }
 
   statusMeta(key: string) {

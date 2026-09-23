@@ -1,5 +1,14 @@
-import { Component, EventEmitter, Input, Output, signal } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 export interface CalendarDay {
   date: string;
@@ -12,11 +21,11 @@ export interface CalendarDay {
 @Component({
   selector: 'app-date-picker',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './date-picker.html',
   styleUrl: './date-picker.css',
 })
-export class DatePicker {
+export class DatePicker implements OnChanges {
   /** aktueller Wert im Format YYYY-MM-DD */
   @Input() value: string = '';
   /** eindeutiger name-Präfix, falls mehrere Picker gleichzeitig auf der Seite sind */
@@ -27,6 +36,13 @@ export class DatePicker {
 
   open = signal(false);
   viewMonth = signal(new Date());
+  inputText = '';
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['value']) {
+      this.inputText = this.displayValue();
+    }
+  }
 
   toggle() {
     this.open.update((o) => !o);
@@ -61,6 +77,43 @@ export class DatePicker {
     return d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
   }
 
+  /** Wird bei jedem Tastenanschlag im Textfeld aufgerufen */
+  onManualInput(text: string) {
+    this.inputText = text;
+  }
+
+  /** Wird beim Verlassen des Feldes (blur) oder Enter aufgerufen */
+  commitManualInput() {
+    const match = this.inputText.trim().match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+    if (!match) {
+      this.inputText = this.displayValue();
+      return;
+    }
+    const [, day, month, year] = match;
+    const iso = `${year}-${month}-${day}`;
+    const parsed = new Date(iso);
+    const todayStr = this.toDateStr(new Date());
+
+    const isValidDate =
+      !isNaN(parsed.getTime()) &&
+      parsed.getFullYear() === Number(year) &&
+      parsed.getMonth() + 1 === Number(month) &&
+      parsed.getDate() === Number(day);
+
+    if (!isValidDate || iso < todayStr) {
+      this.inputText = this.displayValue();
+      return;
+    }
+
+    this.value = iso;
+    this.inputText = this.displayValue();
+    this.valueChange.emit(iso);
+  }
+
+  onEnter(e: Event) {
+    (e.target as HTMLInputElement).blur();
+  }
+
   days(): CalendarDay[] {
     const view = this.viewMonth();
     const year = view.getFullYear();
@@ -91,6 +144,7 @@ export class DatePicker {
   select(day: CalendarDay) {
     if (day.isPast) return;
     this.value = day.date;
+    this.inputText = this.displayValue();
     this.valueChange.emit(day.date);
     this.open.set(false);
   }
