@@ -1,0 +1,66 @@
+<div class="relative">
+  <button
+    type="button"
+    (click)="toggle()"
+    class="w-full border border-gray-200 rounded-full px-4 py-2 text-base bg-gray-50 hover:bg-white transition-colors flex items-center gap-1.5 min-w-[140px]"
+  >
+    {{ displayValue() || 'Datum wählen' }}
+    <svg class="w-3.5 h-3.5 ml-auto shrink-0" viewBox="0 0 12 12" fill="none">
+      <rect x="1.5" y="2.5" width="9" height="8" rx="1.5" stroke="currentColor" stroke-width="1.2" />
+      <path d="M1.5 4.5H10.5" stroke="currentColor" stroke-width="1.2" />
+      <path d="M4 1.5V3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+      <path d="M8 1.5V3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+    </svg>
+  </button>
+
+  @if (open()) {
+    <div class="fixed inset-0 z-40" (click)="close()"></div>
+    <div
+      class="absolute left-0 top-11 bg-white border border-gray-200 rounded-2xl shadow-lg p-3 z-50 w-[280px] max-w-[90vw]"
+    >
+      <div class="flex items-center justify-between mb-2 px-1">
+        <button
+          type="button"
+          (click)="prevMonth()"
+          class="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center"
+        >
+          ‹
+        </button>
+        <span class="text-base font-medium capitalize">{{ monthLabel() }}</span>
+        <button
+          type="button"
+          (click)="nextMonth()"
+          class="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center"
+        >
+          ›
+        </button>
+      </div>
+
+      <div class="grid grid-cols-7 gap-1 mb-1">
+        @for (w of weekdayLabels; track w) {
+          <span class="text-base text-gray-400 text-center">{{ w }}</span>
+        }
+      </div>
+
+      <div class="grid grid-cols-7 gap-1">
+        @for (d of days(); track d.date) {
+          <button
+            type="button"
+            (click)="select(d)"
+            [disabled]="d.isPast"
+            class="h-9 rounded-full text-base flex items-center justify-center transition-colors"
+            [class.text-gray-300]="d.isPast || !d.inMonth"
+            [class.cursor-not-allowed]="d.isPast"
+            [class.hover:bg-gray-100]="!d.isPast && d.date !== value"
+            [class.bg-gray-900]="d.date === value"
+            [class.text-white]="d.date === value"
+            [class.border]="d.isToday && d.date !== value"
+            [class.border-gray-900]="d.isToday && d.date !== value"
+          >
+            {{ d.day }}
+          </button>
+        }
+      </div>
+    </div>
+  }
+</div>

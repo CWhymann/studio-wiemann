@@ -3,10 +3,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProjectStore } from '../../core/project-store';
 import { STATUSES, DAYS, TaskStatus, Task, Priority, PRIORITIES } from '../../models/task.model';
+import { DatePicker } from '../date-picker/date-picker';
 
 @Component({
   selector: 'app-board',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, DatePicker],
   templateUrl: './board.html',
   styleUrl: './board.css',
 })

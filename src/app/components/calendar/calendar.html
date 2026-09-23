@@ -21,11 +21,7 @@
       }
     </div>
 
-    <input
-      type="date"
-      (change)="jumpToDate($any($event.target).value)"
-      class="text-base border border-gray-200 rounded-full px-3 py-1.5 bg-white"
-    />
+    <app-date-picker (valueChange)="jumpToDate($event)" name="jumpDate" />
   </div>
 
   @for (week of [weekDates(), nextWeekDates()]; track $index) {

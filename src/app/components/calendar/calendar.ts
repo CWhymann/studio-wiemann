@@ -3,10 +3,11 @@ import { CommonModule } from '@angular/common';
 import { ProjectStore } from '../../core/project-store';
 import { STATUSES, DAYS } from '../../models/task.model';
 import { getMonday, getISOWeek, formatDayMonth, isToday } from '../../core/date-utils';
+import { DatePicker } from '../date-picker/date-picker';
 
 @Component({
   selector: 'app-calendar',
-  imports: [CommonModule],
+  imports: [CommonModule, DatePicker],
   templateUrl: './calendar.html',
   styleUrl: './calendar.css',
 })
