@@ -2,7 +2,7 @@ import { Component, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProjectStore } from '../../core/project-store';
 import { STATUSES, DAYS } from '../../models/task.model';
-import { getMonday, getISOWeek, formatDayMonth, isToday } from '../../core/date-utils';
+import { getMonday, getISOWeek, formatDayMonth, isToday, toDateStr } from '../../core/date-utils';
 import { DatePicker } from '../date-picker/date-picker';
 
 @Component({
@@ -70,12 +70,12 @@ export class Calendar {
   }
 
   tasksForDate(date: Date) {
-    const dateStr = date.toISOString().split('T')[0];
+    const dateStr = toDateStr(date);
     return this.store.tasks().filter((t) => t.due_date === dateStr);
   }
 
   dateId(date: Date) {
-    return date.toISOString().split('T')[0];
+    return toDateStr(date);
   }
 
   statusMeta(key: string) {

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProjectStore } from '../../core/project-store';
 import { STATUSES, DAYS, TaskStatus, Task, Priority, PRIORITIES } from '../../models/task.model';
+import { toDateStr } from '../../core/date-utils';
 import { DatePicker } from '../date-picker/date-picker';
 
 @Component({
@@ -19,7 +20,7 @@ export class Board {
   showForm = signal(false);
   newTitle = '';
   newOwners = signal<string[]>([]);
-  newDueDate: string = new Date().toISOString().split('T')[0];
+  newDueDate: string = toDateStr(new Date());
   newPriority = signal<Priority>('normal');
 
   query = signal('');
@@ -67,7 +68,7 @@ export class Board {
 
   dueDateStatus(dueDate: string | null): 'overdue' | 'today' | 'normal' {
     if (!dueDate) return 'normal';
-    const today = new Date().toISOString().split('T')[0];
+    const today = toDateStr(new Date());
     if (dueDate < today) return 'overdue';
     if (dueDate === today) return 'today';
     return 'normal';
@@ -166,7 +167,7 @@ export class Board {
     this.editingTaskId.set(t.id);
     this.eTitle = t.title;
     this.eOwners.set([...t.owners]);
-    this.eDueDate = t.due_date ?? new Date().toISOString().split('T')[0];
+    this.eDueDate = t.due_date ?? toDateStr(new Date());
     this.ePriority.set(t.priority);
   }
   cancelEditTask() {

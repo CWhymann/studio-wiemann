@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { toDateStr } from '../../core/date-utils';
 
 export interface CalendarDay {
   date: string;
@@ -92,7 +93,7 @@ export class DatePicker implements OnChanges {
     const [, day, month, year] = match;
     const iso = `${year}-${month}-${day}`;
     const parsed = new Date(iso);
-    const todayStr = this.toDateStr(new Date());
+    const todayStr = toDateStr(new Date());
 
     const isValidDate =
       !isNaN(parsed.getTime()) &&
@@ -123,13 +124,13 @@ export class DatePicker implements OnChanges {
     const startOffset = (firstOfMonth.getDay() + 6) % 7;
     const start = new Date(year, month, 1 - startOffset);
 
-    const todayStr = this.toDateStr(new Date());
+    const todayStr = toDateStr(new Date());
 
     const result: CalendarDay[] = [];
     for (let i = 0; i < 42; i++) {
       const d = new Date(start);
       d.setDate(start.getDate() + i);
-      const dateStr = this.toDateStr(d);
+      const dateStr = toDateStr(d);
       result.push({
         date: dateStr,
         day: d.getDate(),
@@ -147,12 +148,5 @@ export class DatePicker implements OnChanges {
     this.inputText = this.displayValue();
     this.valueChange.emit(day.date);
     this.open.set(false);
-  }
-
-  private toDateStr(d: Date): string {
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${y}-${m}-${day}`;
   }
 }
