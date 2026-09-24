@@ -36,132 +36,144 @@
       />
     </div>
   } @else {
-    <div class="relative mb-4 w-fit">
-      <button
-        (click)="toggleProjectMenu()"
-        class="flex items-center gap-1.5 text-base uppercase tracking-wide text-gray-400 font-medium hover:text-gray-900 transition-colors"
-      >
-        <span class="w-2 h-2 rounded-full" [style.background]="store.activeProject()?.color"></span>
-        {{ store.activeProject()?.name }}
-      </button>
-      @if (projectMenuOpen()) {
-        <div
-          class="absolute top-6 left-0 bg-white border border-gray-200 rounded-xl shadow-lg py-1 z-10 min-w-[180px]"
+    <div class="flex items-center justify-between mb-6 md:mb-4">
+      <div class="relative w-fit">
+        <button
+          (click)="toggleProjectMenu()"
+          class="flex items-center gap-1.5 text-base uppercase tracking-wide text-gray-400 font-medium hover:text-gray-900 transition-colors"
         >
-          @for (p of store.projects(); track p.key) {
-            @if (editingProjectKey() === p.key) {
-              <div class="px-3 py-2 flex items-center gap-1" (click)="$event.stopPropagation()">
-                <input
-                  [(ngModel)]="eProjectName"
-                  name="eProjectName-{{ p.key }}"
-                  class="flex-1 border border-gray-200 rounded px-2 py-1 text-base focus:outline-none"
-                />
-                <button
-                  (click)="saveEditProject(p.key, $event)"
-                  class="text-base px-2 py-1 rounded bg-gray-900 text-white"
-                >
-                  OK
-                </button>
-                <button
-                  (click)="cancelEditProject($event)"
-                  class="text-base px-2 py-1 text-gray-400"
-                >
-                  Abbrechen
-                </button>
-              </div>
-            } @else {
-              <div class="w-full flex items-center gap-1 px-3 py-2 hover:bg-gray-50 group">
-                <button
-                  (click)="switchProject(p.key)"
-                  class="flex-1 text-left text-base flex items-center gap-2"
-                  [class.font-semibold]="p.key === store.activeKey()"
-                >
-                  <span class="w-2 h-2 rounded-full" [style.background]="p.color"></span>
-                  {{ p.name }}
-                </button>
-                <button
-                  (click)="startEditProject(p.key, p.name, $event)"
-                  class="text-gray-400 hover:text-black shrink-0"
-                  title="Umbenennen"
-                >
-                  ✎
-                </button>
-                <button
-                  (click)="confirmDeleteProject(p.key, p.name, $event)"
-                  class="text-gray-400 hover:text-red-500 shrink-0"
-                  title="Löschen"
-                >
-                  ✕
-                </button>
-              </div>
+          <span
+            class="w-2 h-2 rounded-full"
+            [style.background]="store.activeProject()?.color"
+          ></span>
+          {{ store.activeProject()?.name }}
+        </button>
+        @if (projectMenuOpen()) {
+          <div
+            class="absolute top-6 left-0 bg-white border border-gray-200 rounded-xl shadow-lg py-1 z-10 min-w-45"
+          >
+            @for (p of store.projects(); track p.key) {
+              @if (editingProjectKey() === p.key) {
+                <div class="px-3 py-2 flex items-center gap-1" (click)="$event.stopPropagation()">
+                  <input
+                    [(ngModel)]="eProjectName"
+                    name="eProjectName-{{ p.key }}"
+                    class="flex-1 border border-gray-200 rounded px-2 py-1 text-base focus:outline-none"
+                  />
+                  <button
+                    (click)="saveEditProject(p.key, $event)"
+                    class="text-base px-2 py-1 rounded bg-gray-900 text-white"
+                  >
+                    OK
+                  </button>
+                  <button
+                    (click)="cancelEditProject($event)"
+                    class="text-base px-2 py-1 text-gray-400"
+                  >
+                    Abbrechen
+                  </button>
+                </div>
+              } @else {
+                <div class="w-full flex items-center gap-1 px-3 py-2 hover:bg-gray-50 group">
+                  <button
+                    (click)="switchProject(p.key)"
+                    class="flex-1 text-left text-base flex items-center gap-2"
+                    [class.font-semibold]="p.key === store.activeKey()"
+                  >
+                    <span class="w-2 h-2 rounded-full" [style.background]="p.color"></span>
+                    {{ p.name }}
+                  </button>
+                  <button
+                    (click)="startEditProject(p.key, p.name, $event)"
+                    class="text-gray-400 hover:text-black shrink-0"
+                    title="Umbenennen"
+                  >
+                    ✎
+                  </button>
+                  <button
+                    (click)="confirmDeleteProject(p.key, p.name, $event)"
+                    class="text-gray-400 hover:text-red-500 shrink-0"
+                    title="Löschen"
+                  >
+                    ✕
+                  </button>
+                </div>
+              }
             }
-          }
-          <div class="border-t border-gray-100 mt-1 pt-1">
-            @if (!showNewProjectForm()) {
-              <button
-                (click)="showNewProjectForm.set(true)"
-                class="w-full text-left px-3 py-2 text-base text-gray-500 hover:bg-gray-50"
-              >
-                + Neues Projekt
-              </button>
-            } @else {
-              <form (ngSubmit)="createProject()" class="px-3 py-2 flex gap-1">
-                <input
-                  [(ngModel)]="newProjectName"
-                  name="newProjectName"
-                  placeholder="Projektname"
-                  class="flex-1 border border-gray-200 rounded px-2 py-1 text-base focus:outline-none"
-                />
-                <button type="submit" class="bg-gray-900 text-white px-2 py-1 rounded text-base">
-                  OK
+            <div class="border-t border-gray-100 mt-1 pt-1">
+              @if (!showNewProjectForm()) {
+                <button
+                  (click)="showNewProjectForm.set(true)"
+                  class="w-full text-left px-3 py-2 text-base text-gray-500 hover:bg-gray-50"
+                >
+                  + Neues Projekt
                 </button>
-              </form>
+              } @else {
+                <form (ngSubmit)="createProject()" class="px-3 py-2 flex gap-1">
+                  <input
+                    [(ngModel)]="newProjectName"
+                    name="newProjectName"
+                    placeholder="Projektname"
+                    class="flex-1 border border-gray-200 rounded px-2 py-1 text-base focus:outline-none"
+                  />
+                  <button type="submit" class="bg-gray-900 text-white px-2 py-1 rounded text-base">
+                    OK
+                  </button>
+                </form>
+              }
+            </div>
+          </div>
+        }
+      </div>
+
+      <button
+        (click)="mobileMenuOpen.set(true)"
+        class="md:hidden flex items-center gap-2 bg-white border border-gray-200 rounded-full px-3.5 py-1.5 text-base font-medium"
+        aria-label="Menü öffnen"
+      >
+        {{ currentLabel() }}
+        <span class="text-lg leading-none">☰</span>
+      </button>
+    </div>
+
+    <div class="hidden md:block mb-6">
+      <div class="flex items-center gap-1 bg-white border border-gray-200 rounded-full p-1 w-fit">
+        @for (t of tabs; track t.key) {
+          <button
+            (click)="view.set(t.key)"
+            class="px-3.5 py-1.5 rounded-full text-base font-medium transition-colors shrink-0"
+            [class.bg-gray-900]="view() === t.key"
+            [class.text-white]="view() === t.key"
+            [class.text-gray-500]="view() !== t.key"
+          >
+            {{ t.label }}
+          </button>
+        }
+      </div>
+    </div>
+
+    @if (mobileMenuOpen()) {
+      <div class="md:hidden fixed inset-0 z-40 bg-black/40" (click)="mobileMenuOpen.set(false)">
+        <div
+          class="absolute top-4 right-4 w-[70%] max-w-xs bg-white border border-gray-200 rounded-2xl shadow-lg p-2"
+          (click)="$event.stopPropagation()"
+        >
+          <div class="flex flex-col gap-1">
+            @for (t of tabs; track t.key) {
+              <button
+                (click)="view.set(t.key); mobileMenuOpen.set(false)"
+                class="w-full text-left px-3.5 py-2.5 rounded-full text-base font-medium transition-colors"
+                [class.bg-gray-900]="view() === t.key"
+                [class.text-white]="view() === t.key"
+                [class.text-gray-500]="view() !== t.key"
+              >
+                {{ t.label }}
+              </button>
             }
           </div>
         </div>
-      }
-    </div>
-
-    <div class="max-w-full overflow-x-auto no-scrollbar mb-6">
-      <div class="flex items-center gap-1 bg-white border border-gray-200 rounded-full p-1 w-fit">
-        <button
-          (click)="view.set('board')"
-          class="px-3.5 py-1.5 rounded-full text-base font-medium transition-colors shrink-0"
-          [class.bg-gray-900]="view() === 'board'"
-          [class.text-white]="view() === 'board'"
-          [class.text-gray-500]="view() !== 'board'"
-        >
-          Board
-        </button>
-        <button
-          (click)="view.set('team')"
-          class="px-3.5 py-1.5 rounded-full text-base font-medium transition-colors shrink-0"
-          [class.bg-gray-900]="view() === 'team'"
-          [class.text-white]="view() === 'team'"
-          [class.text-gray-500]="view() !== 'team'"
-        >
-          Team
-        </button>
-        <button
-          (click)="view.set('kalender')"
-          class="px-3.5 py-1.5 rounded-full text-base font-medium transition-colors shrink-0"
-          [class.bg-gray-900]="view() === 'kalender'"
-          [class.text-white]="view() === 'kalender'"
-          [class.text-gray-500]="view() !== 'kalender'"
-        >
-          Kalender
-        </button>
-        <button
-          (click)="view.set('dashboard')"
-          class="px-3.5 py-1.5 rounded-full text-base font-medium transition-colors shrink-0"
-          [class.bg-gray-900]="view() === 'dashboard'"
-          [class.text-white]="view() === 'dashboard'"
-          [class.text-gray-500]="view() !== 'dashboard'"
-        >
-          Dashboard
-        </button>
       </div>
-    </div>
+    }
 
     @switch (view()) {
       @case ('board') {

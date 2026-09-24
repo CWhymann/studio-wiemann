@@ -15,6 +15,13 @@ import { Dashboard } from './components/dashboard/dashboard';
 })
 export class App {
   view = signal<'board' | 'team' | 'kalender' | 'dashboard'>('board');
+  mobileMenuOpen = signal(false);
+  readonly tabs = [
+    { key: 'board', label: 'Board' },
+    { key: 'team', label: 'Team' },
+    { key: 'kalender', label: 'Kalender' },
+    { key: 'dashboard', label: 'Dashboard' },
+  ] as const;
   projectMenuOpen = signal(false);
   showNewProjectForm = signal(false);
   newProjectName = '';
@@ -25,6 +32,10 @@ export class App {
   deleteProjectTarget = signal<{ key: string; name: string } | null>(null);
 
   constructor(public store: ProjectStore) {}
+
+  currentLabel() {
+    return this.tabs.find((t) => t.key === this.view())!.label;
+  }
 
   toggleProjectMenu() {
     this.projectMenuOpen.update((o) => !o);
