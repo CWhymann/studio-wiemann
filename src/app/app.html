@@ -47,6 +47,20 @@
             [style.background]="store.activeProject()?.color"
           ></span>
           {{ store.activeProject()?.name }}
+          <svg
+            class="w-3 h-3 transition-transform shrink-0 text-black"
+            [class.rotate-180]="projectMenuOpen()"
+            viewBox="0 0 12 12"
+            fill="none"
+          >
+            <path
+              d="M3 4.5L6 7.5L9 4.5"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
         </button>
         @if (projectMenuOpen()) {
           <div
