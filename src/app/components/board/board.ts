@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProjectStore } from '../../core/project-store';
@@ -16,6 +16,12 @@ export class Board {
   readonly statuses = STATUSES;
   readonly days = DAYS;
   readonly priorities = PRIORITIES;
+
+  // Alle vorhandenen Team-Mitarbeiter (projektübergreifend), pro Name nur einmal
+  readonly selectableOwners = computed(() => {
+    const seen = new Set<string>();
+    return this.store.allPeople().filter((p) => !seen.has(p.name) && seen.add(p.name));
+  });
 
   showForm = signal(false);
   newTitle = '';
